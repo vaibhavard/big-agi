@@ -22,7 +22,7 @@ function RenderCodeImpl(props: {
   inferCodeLanguage: (blockTitle: string, code: string) => string | null,
 }) {
   // state
-  const [showHTML, setShowHTML] = React.useState(false);
+  const [showHTML, setShowHTML] = React.useState(true);
   const [showSVG, setShowSVG] = React.useState(true);
   const [showPlantUML, setShowPlantUML] = React.useState(true);
 
