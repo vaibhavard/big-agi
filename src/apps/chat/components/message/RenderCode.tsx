@@ -121,7 +121,7 @@ function RenderCodeImpl(props: {
         )}
         {isHTML && (
           <Tooltip title={renderHTML ? 'Hide' : 'Show Web Page'} variant='solid'>
-            <IconButton variant={renderHTML ? 'solid' : 'soft'} color='danger' onClick={() => setShowHTML(!showHTML)}>
+            <IconButton variant={renderHTML ? 'solid' : 'soft'} color='danger' onClick={() => setShowHTML(true)}>
               <HtmlIcon />
             </IconButton>
           </Tooltip>
