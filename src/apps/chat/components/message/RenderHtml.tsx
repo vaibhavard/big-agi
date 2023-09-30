@@ -45,7 +45,7 @@ export const IFrameComponent = (props: { htmlString: string }) => {
 
 
 export function RenderHtml(props: { htmlBlock: HtmlBlock, sx?: SxProps }) {
-  const [showHTML, setShowHTML] = React.useState(false);
+  const [showHTML, setShowHTML] = React.useState(true);
 
   // remove the font* properties from sx
   const sx: any = props.sx || {};
