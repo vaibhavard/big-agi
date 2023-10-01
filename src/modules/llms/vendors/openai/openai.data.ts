@@ -47,9 +47,9 @@ const knownOpenAIChatModels: ({ idPrefix: string } & Omit<ModelDescriptionSchema
     idPrefix: 'gpt-4',
     label: 'GPT-4',
     description: 'Insightful, big thinker, slower, pricey',
-    contextWindow: 8192,
+    contextWindow: 30192,
     interfaces: [LLM_IF_OAI_Chat],
-    hidden: true,
+    hidden: false,
   },
 
 
@@ -86,7 +86,15 @@ const knownOpenAIChatModels: ({ idPrefix: string } & Omit<ModelDescriptionSchema
     label: '3.5-Turbo (0301)',
     description: 'Snapshot of gpt-3.5-turbo from March 1st 2023. Will be deprecated on June 13th 2024 at the earliest.',
     contextWindow: 4097,
-    hidden: true,
+    hidden: false,
+    interfaces: [LLM_IF_OAI_Chat],
+  },
+  {
+    idPrefix: 'gpt-4-web',
+    label: '3.5-Turbo (0301)',
+    description: 'Based on bingAI.',
+    contextWindow: 1444097,
+    hidden: false,
     interfaces: [LLM_IF_OAI_Chat],
   },
   {
@@ -101,7 +109,7 @@ const knownOpenAIChatModels: ({ idPrefix: string } & Omit<ModelDescriptionSchema
     label: '3.5-Turbo',
     description: 'Fair speed and smarts.',
     contextWindow: 4097,
-    hidden: true,
+    hidden: false,
     interfaces: [LLM_IF_OAI_Chat],
   },
 
@@ -127,9 +135,9 @@ const knownOpenAIChatModels: ({ idPrefix: string } & Omit<ModelDescriptionSchema
     idPrefix: '',
     label: '?:',
     description: 'Unknown, please let us know the ID. Assuming a 4097 context window size and Chat capabilities.',
-    contextWindow: 4097,
+    contextWindow: 144097,
     interfaces: [LLM_IF_OAI_Chat],
-    hidden: true,
+    hidden: false,
   },
 ];
 
