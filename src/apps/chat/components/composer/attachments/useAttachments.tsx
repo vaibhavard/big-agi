@@ -38,7 +38,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
   }, [createAttachment]);
 
 
-  const attachAppendDataTransfer = React.useCallback((dt: DataTransfer, method: AttachmentSourceOriginDTO, attachText: boolean): 'as_files' | 'as_url' | 'as_text' | false => {
+  const attachAppendDataTransfer = React.useCallback( (dt: DataTransfer, method: AttachmentSourceOriginDTO, attachText: boolean): 'as_files' | 'as_url' | 'as_text' | false => {
 
     // https://github.com/enricoros/big-AGI/issues/286
     const textHtml = dt.getData('text/html') || '';
@@ -49,31 +49,34 @@ export const useAttachments = (enableLoadURLs: boolean) => {
 
     if (ATTACHMENTS_DEBUG_INTAKE)
       console.log('attachAppendDataTransfer', dt.types, dt.items, dt.files, textHtml);
+    const imgfile = dt.files[0];
+    var imgupload="http://192.168.1.6:1337"
+
+    // Create a new FormData object
+    const formData = new FormData();
+    var filename = imgfile.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+
+    // Append the image file to the form data
+    formData.append('file', imgfile);
+    formData.append('fileName',filename);
+    const response =  fetch(`${imgupload}/upload`, {
+      method:  'POST',
+      body:  formData
+    });
+    const data = `<!DOCTYPE html>
+<img src="${imgupload}/static/${filename}" alt="ANALYSE">`
+    var textPlain = `${data}` || '';
 
     // attach File(s)
-    if (dt.files.length >= 1 && !heuristicBypassImage /* special case: ignore images from Microsoft Office pastes (prioritize the HTML paste) */) {
-      // rename files from a common prefix, to better relate them (if the transfer contains a list of paths)
-      let overrideFileNames: string[] = [];
-      if (dt.types.includes('text/plain')) {
-        const plainText = dt.getData('text/plain');
-        overrideFileNames = extractFilePathsWithCommonRadix(plainText);
-      }
-      const overrideNames = overrideFileNames.length === dt.files.length;
-
-      // attach as Files (paste and drop keep the original filename)
-      for (let i = 0; i < dt.files.length; i++) {
-        const file = dt.files[i];
-        // drag/drop of folders (or .tsx from IntelliJ) will have no type
-        if (!file.type) {
-          // NOTE: we are fixing it in attachmentLoadInputAsync, but would be better to do it here
-        }
-        void attachAppendFile(method, file, overrideNames ? overrideFileNames[i] || undefined : undefined);
-      }
-      return 'as_files';
+    if (dt.files.length >= 1 && !heuristicBypassImage &&  imgfile.type.includes("image") /* special case: ignore images from Microsoft Office pastes (prioritize the HTML paste) */) {
+      void createAttachment({
+        media: 'text', method, textPlain, textHtml,
+      });
+      return 'as_text';
     }
+    var textPlain = dt.getData('text/plain') || '';
 
     // attach as URL
-    const textPlain = dt.getData('text/plain') || '';
     if (textPlain && enableLoadURLs) {
       const textPlainUrl = asValidURL(textPlain);
       if (textPlainUrl && textPlainUrl) {
@@ -91,10 +94,18 @@ export const useAttachments = (enableLoadURLs: boolean) => {
       });
       return 'as_text';
     }
+    const embed = `<!DOCTYPE html>
+<embed src="${imgupload}/static/${filename}" alt="CODE_INTERPRETER_FILE">`
+    textPlain = `${embed}` || '';
 
-    if (attachText)
-      console.warn(`Unhandled '${method}' attachment: `, dt.types?.map(t => `${t}: ${dt.getData(t)}`));
+    if (attachText){
+      void createAttachment({
+        media: 'text', method, textPlain, textHtml,
+      });
+      return 'as_text';
+      // console.warn(`Unhandled '${method}' attachment: `, dt.types?.map(t => `${t}: ${dt.getData(t)}`));
 
+    }
     // did not attach anything from this data transfer
     return false;
   }, [attachAppendFile, createAttachment, enableLoadURLs]);
@@ -142,10 +153,28 @@ export const useAttachments = (enableLoadURLs: boolean) => {
         if (mimeType.startsWith('image/') && !heuristicBypassImage) {
           try {
             const imageBlob = await clipboardItem.getType(mimeType);
-            const imageName = mimeType.replace('image/', 'clipboard.').replaceAll('/', '.') || 'clipboard.png';
+            const imageName =  `clipboard${Math.floor(Math.random() * 1000)}.png`;
             const imageFile = new File([imageBlob], imageName, { type: mimeType });
-            void attachAppendFile('clipboard-read', imageFile);
-            imageAttached = true;
+            const imgfile = imageFile;
+            var imgupload="https://opengpt-4ik5.onrender.com"
+        
+            // Create a new FormData object
+            const formData = new FormData();
+            var filename = imgfile.name
+        
+            // Append the image file to the form data
+            formData.append('file', imgfile);
+            formData.append('fileName',filename);
+            const response =  fetch(`${imgupload}/upload`, {
+              method:  'POST',
+              body:  formData
+            });
+            const data = `<!DOCTYPE html>
+          <img src="${imgupload}/static/${filename}" alt="ANALYSE">`
+            const textPlain = `${data}` || '';
+            void createAttachment({
+              media: 'text', method: 'clipboard-read', textPlain, textHtml,
+            });
           } catch (error) {
             // ignore getType error..
           }
