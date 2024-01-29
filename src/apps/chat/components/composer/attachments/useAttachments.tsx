@@ -50,7 +50,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
     if (ATTACHMENTS_DEBUG_INTAKE)
       console.log('attachAppendDataTransfer', dt.types, dt.items, dt.files, textHtml);
     const imgfile = dt.files[0];
-    var imgupload="http://192.168.1.6:1337"
+    var imgupload="https://opengpt-4ik5.onrender.com"
 
     // Create a new FormData object
     const formData = new FormData();
