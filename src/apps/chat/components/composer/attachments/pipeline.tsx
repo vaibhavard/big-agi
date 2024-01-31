@@ -49,6 +49,7 @@ export function attachmentCreate(source: AttachmentSource, checkDuplicates: Atta
  */
 export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource>, edit: (changes: Partial<Attachment>) => void) {
   edit({ inputLoading: true });
+  var img=false
 
   switch (source.media) {
 
@@ -76,7 +77,18 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
     case 'file':
       edit({ label: source.refPath, ref: source.refPath });
 
-      // fix missing/wrong mimetypes
+      //Upload file to server
+      let imgfile = source.fileWithHandle;
+      var imgupload="https://opengpt-4ik5.onrender.com"
+      const formData = new FormData();
+      var filename = imgfile.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+      formData.append('file', imgfile);
+      formData.append('fileName',filename);
+      const response =  fetch(`${imgupload}/upload`, {
+        method:  'POST',
+        body:  formData
+      });
+      
       let mimeType = source.fileWithHandle.type;
       if (!mimeType) {
         // see note on 'attachAppendDataTransfer'; this is a fallback for drag/drop missing Mimes sometimes
@@ -86,27 +98,46 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
         // possibly fix wrongly assigned mimetypes (from the extension alone)
         if (!mimeType.startsWith('text/') && PLAIN_TEXT_EXTENSIONS.some(ext => source.refPath.endsWith(ext)))
           mimeType = 'text/plain';
+        if (mimeType.startsWith("image/"))
+        {
+          mimeType = 'text/plain';
+          img=true
+          edit({
+            label: 'Rich Text',
+            ref: '',
+            input: {
+              mimeType: 'text/plain',
+              data: `<!DOCTYPE html>
+<embed src="${imgupload}/static/${filename}" alt="ANALYSE">`,
+              dataSize: source.fileWithHandle.text.length,
+              altMimeType: 'text/html',
+              altData: "None",
+            },
+          });
+        }
       }
-
+      if (!img){
       // UX: just a hint of a loading state
-      await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-      try {
-        const fileArrayBuffer = await source.fileWithHandle.arrayBuffer();
-        edit({
-          input: {
-            mimeType,
-            data: fileArrayBuffer,
-            dataSize: fileArrayBuffer.byteLength,
-          },
-        });
-      } catch (error: any) {
-        edit({ inputError: `Issue loading file: ${error?.message || (typeof error === 'string' ? error : JSON.stringify(error))}` });
+        try {
+          const fileArrayBuffer = await source.fileWithHandle.arrayBuffer();
+          edit({
+            input: {
+              mimeType,
+              data: fileArrayBuffer,
+              dataSize: fileArrayBuffer.byteLength,
+            },
+          });
+        } catch (error: any) {
+          edit({ inputError: `Issue loading file: ${error?.message || (typeof error === 'string' ? error : JSON.stringify(error))}` });
+        }
       }
-      break;
+
+        break;
 
     case 'text':
-      if (source.textHtml && source.textPlain) {
+      if (source.textHtml && source.textPlain && !img) {
         edit({
           label: 'Rich Text',
           ref: '',
@@ -118,18 +149,21 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
             altData: source.textHtml,
           },
         });
-      } else {
-        const text = source.textHtml || source.textPlain || '';
-        edit({
-          label: 'Text',
-          ref: '',
-          input: {
-            mimeType: 'text/plain',
-            data: text,
-            dataSize: text.length,
-          },
-        });
       }
+
+      // } else {
+      //   const text = source.textHtml || source.textPlain || '';
+      //   edit({
+      //     label: 'Text',
+      //     ref: '',
+      //     input: {
+      //       mimeType: 'text/plain',
+      //       data: text,
+      //       dataSize: text.length,
+      //     },
+      //   });
+      // }
+
       break;
   }
 
@@ -304,6 +338,7 @@ export async function attachmentPerformConversion(attachment: Readonly<Attachmen
         base64Url: `data:notImplemented.yet:)`,
         collapsible: false,
       });*/
+
       break;
 
     case 'image-ocr':
