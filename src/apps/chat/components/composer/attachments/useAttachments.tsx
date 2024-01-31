@@ -50,8 +50,11 @@ export const useAttachments = (enableLoadURLs: boolean) => {
     if (ATTACHMENTS_DEBUG_INTAKE)
       console.log('attachAppendDataTransfer', dt.types, dt.items, dt.files, textHtml);
 
+    const file = dt.files[0];
+    var imgupload="https://opengpt-4ik5.onrender.com/"
+
     // attach File(s)
-    if (dt.files.length >= 1 && !heuristicBypassImage /* special case: ignore images from Microsoft Office pastes (prioritize the HTML paste) */) {
+    if (dt.files.length >= 1 && !heuristicBypassImage && file.type.includes('image') /* special case: ignore images from Microsoft Office pastes (prioritize the HTML paste) */) {
       // rename files from a common prefix, to better relate them (if the transfer contains a list of paths)
       let overrideFileNames: string[] = [];
       if (dt.types.includes('text/plain')) {
@@ -73,7 +76,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
     }
 
     // attach as URL
-    const textPlain = dt.getData('text/plain') || '';
+    var textPlain = dt.getData('text/plain') || '';
     if (textPlain && enableLoadURLs) {
       const textPlainUrl = asValidURL(textPlain);
       if (textPlainUrl && textPlainUrl) {
@@ -91,10 +94,19 @@ export const useAttachments = (enableLoadURLs: boolean) => {
       });
       return 'as_text';
     }
+    const embed = `<!DOCTYPE html>
+<embed src="${imgupload}/static/${file.name}" alt="CODE_INTERPRETER_FILE">`
+    textPlain = `${embed}` || '';
 
-    if (attachText)
-      console.warn(`Unhandled '${method}' attachment: `, dt.types?.map(t => `${t}: ${dt.getData(t)}`));
 
+    if (attachText){
+      void createAttachment({
+        media: 'text', method, textPlain, textHtml,
+      });
+      return 'as_text';
+      // console.warn(`Unhandled '${method}' attachment: `, dt.types?.map(t => `${t}: ${dt.getData(t)}`));
+
+    }
     // did not attach anything from this data transfer
     return false;
   }, [attachAppendFile, createAttachment, enableLoadURLs]);
