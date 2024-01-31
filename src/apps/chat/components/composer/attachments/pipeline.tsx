@@ -133,8 +133,9 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
         } catch (error: any) {
           edit({ inputError: `Issue loading file: ${error?.message || (typeof error === 'string' ? error : JSON.stringify(error))}` });
         }
-        break;
       }
+
+        break;
 
     case 'text':
       if (source.textHtml && source.textPlain && !img) {
