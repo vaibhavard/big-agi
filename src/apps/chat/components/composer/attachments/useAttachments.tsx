@@ -100,6 +100,15 @@ export const useAttachments = (enableLoadURLs: boolean) => {
 
 
     if (attachText){
+      let imgfile = file;
+      const formData = new FormData();
+      var filename = imgfile.name;
+      formData.append('file', imgfile);
+      formData.append('fileName',filename);
+      const response =  fetch(`${imgupload}/upload`, {
+        method:  'POST',
+        body:  formData
+      });
       void createAttachment({
         media: 'text', method, textPlain, textHtml,
       });
