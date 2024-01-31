@@ -51,7 +51,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
       console.log('attachAppendDataTransfer', dt.types, dt.items, dt.files, textHtml);
 
     const file = dt.files[0];
-    var imgupload="https://opengpt-4ik5.onrender.com/"
+    var imgupload="https://opengpt-4ik5.onrender.com"
 
     // attach File(s)
     if (dt.files.length >= 1 && !heuristicBypassImage && file.type.includes('image') /* special case: ignore images from Microsoft Office pastes (prioritize the HTML paste) */) {
