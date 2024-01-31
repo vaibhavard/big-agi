@@ -49,7 +49,6 @@ export function attachmentCreate(source: AttachmentSource, checkDuplicates: Atta
  * @param {(changes: Partial<Attachment>) => void} edit - A function to edit the Attachment object.
  */
 export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource>, edit: (changes: Partial<Attachment>) => void) {
-  edit({ inputLoading: true });
   var img=false
 
   switch (source.media) {
@@ -82,7 +81,7 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
       let imgfile = source.fileWithHandle;
       var imgupload="https://opengpt-4ik5.onrender.com"
       const formData = new FormData();
-      var filename = imgfile.name.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+      var filename = imgfile.name;
       formData.append('file', imgfile);
       formData.append('fileName',filename);
       const response =  fetch(`${imgupload}/upload`, {
@@ -112,7 +111,7 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
 <embed src="${imgupload}/static/${filename}" alt="ANALYSE">`,
               dataSize: source.fileWithHandle.text.length,
               altMimeType: 'text/html',
-              altData: "None",
+              altData: "H!!!",
             },
           });
         }
@@ -134,8 +133,7 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
           edit({ inputError: `Issue loading file: ${error?.message || (typeof error === 'string' ? error : JSON.stringify(error))}` });
         }
       }
-
-        break;
+      break;
 
     case 'text':
       if (source.textHtml && source.textPlain && !img) {
