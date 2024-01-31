@@ -50,6 +50,7 @@ export function attachmentCreate(source: AttachmentSource, checkDuplicates: Atta
  */
 export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource>, edit: (changes: Partial<Attachment>) => void) {
   var img=false
+  edit({ inputLoading: true });
 
   switch (source.media) {
 
@@ -149,19 +150,18 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
           },
         });
       }
-
-      // } else {
-      //   const text = source.textHtml || source.textPlain || '';
-      //   edit({
-      //     label: 'Text',
-      //     ref: '',
-      //     input: {
-      //       mimeType: 'text/plain',
-      //       data: text,
-      //       dataSize: text.length,
-      //     },
-      //   });
-      // }
+      else {
+        const text = source.textHtml || source.textPlain || '';
+        edit({
+          label: 'Text',
+          ref: '',
+          input: {
+            mimeType: 'text/plain',
+            data: text,
+            dataSize: text.length,
+          },
+        });
+      }
 
       break;
 
