@@ -73,7 +73,7 @@ export const appTheme = extendTheme({
           surface: 'var(--joy-palette-neutral-800, #171A1C)',
           level1: 'var(--joy-palette-neutral-900, #0B0D0E)',
           level2: 'var(--joy-palette-neutral-800, #171A1C)',
-          body: '#060807',
+          body: '#30a9c7',
           // Former: popup > surface [900] > level 1 [black], level 2 [800] > body [black]
         },
       },
