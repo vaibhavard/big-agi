@@ -10,7 +10,7 @@ import { useRouterRoute } from '~/common/app.routes';
  * https://github.com/enricoros/big-AGI/issues/299
  */
 export function AppPlaceholder(props: {
-  title?: string | null,
+  title?: string,
   text?: React.ReactNode,
   children?: React.ReactNode,
 }) {
@@ -29,25 +29,23 @@ export function AppPlaceholder(props: {
       border: '1px solid blue',
     }}>
 
-      {(props.title !== null || !!props.text) && (
-        <Box sx={{
-          my: 'auto',
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: 4,
-          border: '1px solid red',
-        }}>
+      <Box sx={{
+        my: 'auto',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        gap: 4,
+        border: '1px solid red',
+      }}>
 
-          <Typography level='h1'>
-            {placeholderAppName}
+        <Typography level='h1'>
+          {placeholderAppName}
+        </Typography>
+        {!!props.text && (
+          <Typography>
+            {props.text}
           </Typography>
-          {!!props.text && (
-            <Typography>
-              {props.text}
-            </Typography>
-          )}
+        )}
 
-        </Box>
-      )}
+      </Box>
 
       {props.children}
 

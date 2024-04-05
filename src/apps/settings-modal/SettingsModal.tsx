@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import type { SxProps } from '@mui/joy/styles/types';
 import { Accordion, AccordionDetails, accordionDetailsClasses, AccordionGroup, AccordionSummary, accordionSummaryClasses, Avatar, Button, Divider, ListItemContent, Stack, styled, Tab, tabClasses, TabList, TabPanel, Tabs } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
 import ScienceIcon from '@mui/icons-material/Science';
@@ -98,13 +97,6 @@ function Topic(props: { title?: string, icon?: string | React.ReactNode, startCo
 }
 
 
-const settingTaxSx: SxProps = {
-  fontFamily: 'body',
-  flex: 1,
-  p: 0,
-  m: 0,
-};
-
 /**
  * Component that allows the User to modify the application settings,
  * persisted on the client via localStorage.
@@ -118,6 +110,8 @@ export function SettingsModal(props: {
 
   // external state
   const isMobile = useIsMobile();
+
+  const tabFixSx = { fontFamily: 'body', flex: 1, p: 0, m: 0 };
 
   return (
     <GoodModal
@@ -153,10 +147,10 @@ export function SettingsModal(props: {
             },
           }}
         >
-          <Tab disableIndicator value={PreferencesTab.Chat} sx={settingTaxSx}>Chat</Tab>
-          <Tab disableIndicator value={PreferencesTab.Voice} sx={settingTaxSx}>Voice</Tab>
-          <Tab disableIndicator value={PreferencesTab.Draw} sx={settingTaxSx}>Draw</Tab>
-          <Tab disableIndicator value={PreferencesTab.Tools} sx={settingTaxSx}>Tools</Tab>
+          <Tab disableIndicator value={PreferencesTab.Chat} sx={tabFixSx}>Chat</Tab>
+          <Tab disableIndicator value={PreferencesTab.Voice} sx={tabFixSx}>Voice</Tab>
+          <Tab disableIndicator value={PreferencesTab.Draw} sx={tabFixSx}>Draw</Tab>
+          <Tab disableIndicator value={PreferencesTab.Tools} sx={tabFixSx}>Tools</Tab>
         </TabList>
 
         <TabPanel value={PreferencesTab.Chat} variant='outlined' sx={{ p: 'var(--Tabs-gap)', borderRadius: 'md' }}>

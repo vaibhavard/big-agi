@@ -1,8 +1,19 @@
 import * as React from 'react';
+import { keyframes } from '@emotion/react';
 
 import { Avatar, Box } from '@mui/joy';
 
-import { animationScalePulse } from '~/common/util/animUtils';
+
+const cssScaleKeyframes = keyframes`
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }`;
 
 
 export function CallAvatar(props: { symbol: string, imageUrl?: string, isRinging?: boolean, onClick: () => void }) {
@@ -23,7 +34,7 @@ export function CallAvatar(props: { symbol: string, imageUrl?: string, isRinging
         <Box
           sx={{
             ...(props.isRinging
-              ? { animation: `${animationScalePulse} 1.4s ease-in-out infinite` }
+              ? { animation: `${cssScaleKeyframes} 1.4s ease-in-out infinite` }
               : {}),
           }}
         >

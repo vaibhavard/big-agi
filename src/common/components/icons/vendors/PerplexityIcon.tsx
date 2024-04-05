@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import { SvgIcon, SvgIconProps } from '@mui/joy';
+import type { SxProps } from '@mui/joy/styles/types';
+import { SvgIcon } from '@mui/joy';
 
-export function PerplexityIcon(props: SvgIconProps) {
+export function PerplexityIcon(props: { sx?: SxProps }) {
   return <SvgIcon viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='currentColor' strokeWidth={1.5} strokeLinecap='round' strokeLinejoin='round' {...props}>
     <path d='M 11.977248,8.1395615 5.6952727,2.280012 v 5.8595495 z' fill='none' />
     <path d='M 12.103816,8.1395615 18.385789,2.280012 v 5.8595495 z' fill='none' />

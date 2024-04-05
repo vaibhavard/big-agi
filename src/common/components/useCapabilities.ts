@@ -36,12 +36,12 @@ export { useCapability as useCapabilityElevenLabs } from '~/modules/elevenlabs/e
 /// Image Generation
 
 export interface TextToImageProvider {
-  id: string;             // e.g. 'openai-2' or 'localai'
+  id: string;
   label: string;          // e.g. 'OpenAI #2'
   painter: string;        // e.g. 'DALL·E' or 'Prodia'
   description: string;
   configured: boolean;
-  vendor: 'localai' | 'openai' | 'prodia';
+  vendor: 'openai' | 'prodia';
 }
 
 export interface CapabilityTextToImage {

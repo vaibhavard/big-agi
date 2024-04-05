@@ -4,16 +4,17 @@ import { v4 as uuidv4 } from 'uuid';
 import type { SxProps } from '@mui/joy/styles/types';
 import { Box, Button, ButtonGroup, Dropdown, Grid, IconButton, Menu, MenuButton, MenuItem, Textarea, Typography } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
-import FormatPaintTwoToneIcon from '@mui/icons-material/FormatPaintTwoTone';
+import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import RemoveIcon from '@mui/icons-material/Remove';
 import StopOutlinedIcon from '@mui/icons-material/StopOutlined';
 
-import { animationEnterBelow } from '~/common/util/animUtils';
+import { animationStopEnter } from '../../chat/components/composer/Composer';
+
 import { lineHeightTextareaMd } from '~/common/app.theme';
 import { useUIPreferencesStore } from '~/common/state/store-ui';
 
@@ -218,7 +219,7 @@ export function PromptDesigner(props: {
 
               <Dropdown>
                 <MenuButton slots={{ root: IconButton }}>
-                  <ArrowForwardRoundedIcon />
+                  <ArrowForwardIcon />
                 </MenuButton>
                 <Menu placement='top'>
                   {/* Add From History? */}
@@ -287,10 +288,10 @@ export function PromptDesigner(props: {
               <Button
                 key='draw-queue'
                 variant='solid' color='primary'
-                endDecorator={<FormatPaintTwoToneIcon />}
+                endDecorator={<FormatPaintIcon />}
                 onClick={handlePromptEnqueue}
                 sx={{
-                  animation: `${animationEnterBelow} 0.1s ease-out`,
+                  animation: `${animationStopEnter} 0.1s ease-out`,
                   boxShadow: !props.isMobile ? `0 8px 24px -4px rgb(var(--joy-palette-primary-mainChannel) / 20%)` : 'none',
                   justifyContent: 'space-between',
                 }}
@@ -305,7 +306,7 @@ export function PromptDesigner(props: {
                 endDecorator={<StopOutlinedIcon sx={{ fontSize: 18 }} />}
                 onClick={handleDrawStop}
                 sx={{
-                  // animation: `${animationEnterBelow} 0.1s ease-out`,
+                  // animation: `${animationStopEnter} 0.1s ease-out`,
                   boxShadow: !props.isMobile ? `0 8px 24px -4px rgb(var(--joy-palette-warning-mainChannel) / 20%)` : 'none',
                   justifyContent: 'space-between',
                 }}
@@ -320,7 +321,7 @@ export function PromptDesigner(props: {
                 endDecorator={<MoreTimeIcon sx={{ fontSize: 18 }} />}
                 onClick={handlePromptEnqueue}
                 sx={{
-                  animation: `${animationEnterBelow} 0.1s ease-out`,
+                  animation: `${animationStopEnter} 0.1s ease-out`,
                   boxShadow: !props.isMobile ? `0 8px 24px -4px rgb(var(--joy-palette-primary-mainChannel) / 20%)` : 'none',
                   justifyContent: 'space-between',
                 }}

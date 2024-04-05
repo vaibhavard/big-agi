@@ -24,12 +24,6 @@ export type AttachmentSource = {
   method: 'clipboard-read' | AttachmentSourceOriginDTO;
   textPlain?: string;
   textHtml?: string;
-} | {
-  media: 'ego';
-  method: 'ego-message';
-  label: string;
-  blockTitle: string;
-  textPlain: string;
 };
 
 
@@ -47,7 +41,6 @@ export type AttachmentConverterType =
   | 'text' | 'rich-text' | 'rich-text-table'
   | 'pdf-text' | 'pdf-images'
   | 'image' | 'image-ocr'
-  | 'ego-message-md'
   | 'unhandled';
 
 export type AttachmentConverter = {
@@ -69,7 +62,7 @@ export type Attachment = {
   readonly id: AttachmentId;
   readonly source: AttachmentSource,
   label: string;
-  ref: string; // will be used in ```ref\n...``` for instance
+  ref: string;
 
   inputLoading: boolean;
   inputError: string | null;

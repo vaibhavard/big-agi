@@ -15,7 +15,7 @@ import { useUXLabsStore } from '~/common/state/store-ux-labs';
 
 
 // uncomment for more settings
-export const DEV_MODE_SETTINGS = false;
+// const DEV_MODE_SETTINGS = false;
 
 
 export function UxLabsSettings() {
@@ -24,17 +24,17 @@ export function UxLabsSettings() {
   const isMobile = useIsMobile();
   const {
     labsAttachScreenCapture, setLabsAttachScreenCapture,
-    labsBeam, setLabsBeam,
     labsCameraDesktop, setLabsCameraDesktop,
     labsChatBarAlt, setLabsChatBarAlt,
+    labsChatBeam, setLabsChatBeam,
     labsHighPerformance, setLabsHighPerformance,
   } = useUXLabsStore();
 
   return <>
 
     <FormSwitchControl
-      title={<><ChatBeamIcon color={labsBeam ? 'primary' : undefined} sx={{ mr: 0.25 }} />Chat Beam</>} description={'v1.15 · ' + (labsBeam ? 'Active' : 'Off')}
-      checked={labsBeam} onChange={setLabsBeam}
+      title={<><ChatBeamIcon color={labsChatBeam ? 'primary' : undefined} sx={{ mr: 0.25 }} />Chat Beam</>} description={'v1.15 · ' + (labsChatBeam ? 'Active' : 'Off')}
+      checked={labsChatBeam} onChange={setLabsChatBeam}
     />
 
     <FormSwitchControl
@@ -42,10 +42,10 @@ export function UxLabsSettings() {
       checked={labsHighPerformance} onChange={setLabsHighPerformance}
     />
 
-    {DEV_MODE_SETTINGS && <FormSwitchControl
+    <FormSwitchControl
       title={<><TitleIcon color={labsChatBarAlt ? 'primary' : undefined} sx={{ mr: 0.25 }} />Chat Title</>} description={'v1.14 · ' + (labsChatBarAlt === 'title' ? 'Show Title' : 'Show Models')}
       checked={labsChatBarAlt === 'title'} onChange={(on) => setLabsChatBarAlt(on ? 'title' : false)}
-    />}
+    />
 
     {!isMobile && <FormSwitchControl
       title={<><ScreenshotMonitorIcon color={labsAttachScreenCapture ? 'primary' : undefined} sx={{ mr: 0.25 }} /> Screen Capture</>} description={'v1.13 · ' + (labsAttachScreenCapture ? 'Enabled' : 'Disabled')}

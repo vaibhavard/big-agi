@@ -1,6 +1,3 @@
-import type { TRPCClientErrorBase } from '@trpc/client';
-import { useQuery } from '@tanstack/react-query';
-
 import type { IModelVendor } from './IModelVendor';
 import type { ModelDescriptionSchema } from '../server/llm.server.types';
 import { DLLM, DModelSource, useModelsStore } from '../store-llms';
@@ -11,31 +8,12 @@ import { FALLBACK_LLM_TEMPERATURE } from './openai/openai.vendor';
  * Hook that fetches the list of models from the vendor and updates the store,
  * while returning the fetch state.
  */
-export function useLlmUpdateModels<TSourceSetup, TAccess, TLLMOptions>(
-  vendor: IModelVendor<TSourceSetup, TAccess, TLLMOptions>,
-  access: TAccess,
-  enabled: boolean,
-  source: DModelSource<TSourceSetup>,
-  keepUserEdits?: boolean,
-): {
-  isFetching: boolean,
-  refetch: () => void,
-  isError: boolean,
-  error: TRPCClientErrorBase<any> | null
-} {
-  return useQuery<{ models: ModelDescriptionSchema[] }, TRPCClientErrorBase<any> | null>({
-    enabled: enabled && !!source,
-    queryKey: ['list-models', source.id],
-    queryFn: async () => {
-      const data = await vendor.rpcUpdateModelsOrThrow(access);
-      source && updateModelsForSource(data, source, keepUserEdits === true);
-      return data;
-    },
-    staleTime: Infinity,
-  });
+export function useLlmUpdateModels<TSourceSetup, TAccess, TLLMOptions>(vendor: IModelVendor<TSourceSetup, TAccess, TLLMOptions>, access: TAccess, enabled: boolean, source: DModelSource<TSourceSetup>, keepUserEdits?: boolean) {
+  return vendor.rpcUpdateModelsQuery(access, enabled, data => source && updateModelsFn(data, source, keepUserEdits === true));
 }
 
-export function updateModelsForSource<TSourceSetup>(data: { models: ModelDescriptionSchema[] }, source: DModelSource<TSourceSetup>, keepUserEdits: boolean) {
+
+function updateModelsFn<TSourceSetup>(data: { models: ModelDescriptionSchema[] }, source: DModelSource<TSourceSetup>, keepUserEdits: boolean) {
   useModelsStore.getState().setLLMs(
     data.models.map(model => modelDescriptionToDLLMOpenAIOptions(model, source)),
     source.id,

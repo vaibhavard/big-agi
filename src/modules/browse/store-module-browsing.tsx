@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 import { CapabilityBrowsing } from '~/common/components/useCapabilities';
-import { getBackendCapabilities } from '~/modules/backend/store-backend-capabilities';
+import { backendCaps } from '~/modules/backend/state-backend';
 
 
 interface BrowseState {
@@ -53,7 +53,7 @@ export const useBrowseStore = create<BrowseState>()(
 
 export function useBrowseCapability(): CapabilityBrowsing {
   // server config
-  const isServerConfig = getBackendCapabilities().hasBrowsing;
+  const isServerConfig = backendCaps().hasBrowsing;
 
   // external client state
   const { wssEndpoint, enableCommandBrowse, enableComposerAttach, enableReactTool, enablePersonaTool } = useBrowseStore();

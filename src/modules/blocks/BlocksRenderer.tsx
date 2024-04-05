@@ -4,8 +4,6 @@ import type { Diff as TextDiff } from '@sanity/diff-match-patch';
 
 import type { SxProps } from '@mui/joy/styles/types';
 import { Box, Button, Tooltip, Typography } from '@mui/joy';
-import UnfoldLessRoundedIcon from '@mui/icons-material/UnfoldLessRounded';
-import UnfoldMoreRoundedIcon from '@mui/icons-material/UnfoldMoreRounded';
 
 import type { DMessage } from '~/common/state/store-chats';
 import { ContentScaling, lineHeightChatTextMd, themeScalingMap } from '~/common/app.theme';
@@ -22,7 +20,7 @@ import { areBlocksEqual, Block, parseMessageBlocks } from './blocks';
 
 
 // How long is the user collapsed message
-const USER_COLLAPSED_LINES: number = 7;
+const USER_COLLAPSED_LINES: number = 8;
 
 
 const blocksSx: SxProps = {
@@ -56,7 +54,6 @@ export function BlocksRenderer(props: {
   fitScreen: boolean;
   isBottom?: boolean;
   showDate?: number;
-  showUnsafeHtml?: boolean;
   wasUserEdited?: boolean;
 
   specialDiagramMode?: boolean;
@@ -81,6 +78,11 @@ export function BlocksRenderer(props: {
   const fromUser = props.fromRole === 'user';
 
 
+  const handleTextUncollapse = React.useCallback(() => {
+    setForceUserExpanded(true);
+  }, []);
+
+
   // Memo text, which could be 'collapsed' to a few lines in case of user messages
 
   const { text, isTextCollapsed } = React.useMemo(() => {
@@ -91,15 +93,6 @@ export function BlocksRenderer(props: {
     }
     return { text: _text, isTextCollapsed: false };
   }, [forceUserExpanded, fromUser, _text]);
-
-  const handleTextCollapse = React.useCallback(() => {
-    setForceUserExpanded(false);
-  }, []);
-
-  const handleTextUncollapse = React.useCallback(() => {
-    setForceUserExpanded(true);
-  }, []);
-
 
   // Memo the styles, to minimize re-renders
 
@@ -200,7 +193,7 @@ export function BlocksRenderer(props: {
             return block.type === 'html'
               ? <RenderHtml key={'html-' + index} htmlBlock={block} sx={scaledCodeSx} />
               : block.type === 'code'
-                ? <RenderCodeMemoOrNot key={'code-' + index} codeBlock={block} fitScreen={props.fitScreen} initialShowHTML={props.showUnsafeHtml} noCopyButton={props.specialDiagramMode} optimizeLightweight={!optimizeWithMemo} sx={scaledCodeSx} />
+                ? <RenderCodeMemoOrNot key={'code-' + index} codeBlock={block} fitScreen={props.fitScreen} noCopyButton={props.specialDiagramMode} optimizeLightweight={!optimizeWithMemo} sx={scaledCodeSx} />
                 : block.type === 'image'
                   ? <RenderImage key={'image-' + index} imageBlock={block} onRunAgain={props.isBottom ? props.onImageRegenerate : undefined} sx={scaledImageSx} />
                   : block.type === 'latex'
@@ -214,11 +207,7 @@ export function BlocksRenderer(props: {
 
       )}
 
-      {isTextCollapsed ? (
-        <Box sx={{ textAlign: 'right' }}><Button variant='soft' size='sm' onClick={handleTextUncollapse} startDecorator={<UnfoldMoreRoundedIcon />} sx={{ minWidth: 100, mt: 0.5 }}>Expand</Button></Box>
-      ) : forceUserExpanded && (
-        <Box sx={{ textAlign: 'right' }}><Button variant='soft' size='sm' onClick={handleTextCollapse} startDecorator={<UnfoldLessRoundedIcon />} sx={{ minWidth: 100, mt: 0.5 }}>Collapse</Button></Box>
-      )}
+      {isTextCollapsed && <Button variant='plain' color='neutral' onClick={handleTextUncollapse}>... expand ...</Button>}
 
       {/* import VisibilityIcon from '@mui/icons-material/Visibility'; */}
       {/*<br />*/}

@@ -1,24 +1,22 @@
 import { getActiveTextToImageProviderOrThrow, t2iGenerateImageOrThrow } from '~/modules/t2i/t2i.client';
 
-import type { ConversationHandler } from '~/common/chats/ConversationHandler';
-import type { TextToImageProvider } from '~/common/components/useCapabilities';
+import { ConversationsManager } from '~/common/chats/ConversationsManager';
+import { TextToImageProvider } from '~/common/components/useCapabilities';
 
 
 /**
  * Text to image, appended as an 'assistant' message
  */
-export async function runImageGenerationUpdatingState(cHandler: ConversationHandler, imageText?: string) {
-  if (!imageText) {
-    cHandler.messageAppendAssistant('Issue: no image description provided.', undefined, 'issue', false);
-    return;
-  }
+export async function runImageGenerationUpdatingState(conversationId: string, imageText: string) {
+  const handler = ConversationsManager.getHandler(conversationId);
 
   // Acquire the active TextToImageProvider
   let t2iProvider: TextToImageProvider | undefined = undefined;
   try {
     t2iProvider = getActiveTextToImageProviderOrThrow();
   } catch (error: any) {
-    cHandler.messageAppendAssistant(`[Issue] Sorry, I can't generate images right now. ${error?.message || error?.toString() || 'Unknown error'}.`, undefined, 'issue', false);
+    const assistantErrorMessageId = handler.messageAppendAssistant(`[Issue] Sorry, I can't generate images right now. ${error?.message || error?.toString() || 'Unknown error'}.`, 'issue', undefined);
+    handler.messageEdit(assistantErrorMessageId, { typing: false }, true);
     return;
   }
 
@@ -28,16 +26,17 @@ export async function runImageGenerationUpdatingState(cHandler: ConversationHand
   if (repeat > 1)
     imageText = imageText.replace(/x(\d+)$|\[(\d+)]$/, '').trim(); // Remove the "xN" or "[N]" part from the imageText
 
-  const assistantMessageId = cHandler.messageAppendAssistant(
+  const assistantMessageId = handler.messageAppendAssistant(
     `Give me ${t2iProvider.vendor === 'openai' ? 'a dozen' : 'a few'} seconds while I draw ${imageText?.length > 20 ? 'that' : '"' + imageText + '"'}...`,
-    undefined, t2iProvider.painter, true,
+    '', undefined,
   );
+  handler.messageEdit(assistantMessageId, { originLLM: t2iProvider.painter }, false);
 
   try {
     const imageUrls = await t2iGenerateImageOrThrow(t2iProvider, imageText, repeat);
-    cHandler.messageEdit(assistantMessageId, { text: imageUrls.join('\n'), typing: false }, true);
+    handler.messageEdit(assistantMessageId, { text: imageUrls.join('\n'), typing: false }, true);
   } catch (error: any) {
     const errorMessage = error?.message || error?.toString() || 'Unknown error';
-    cHandler.messageEdit(assistantMessageId, { text: `[Issue] Sorry, I couldn't create an image for you. ${errorMessage}`, typing: false }, false);
+    handler.messageEdit(assistantMessageId, { text: `[Issue] Sorry, I couldn't create an image for you. ${errorMessage}`, typing: false }, false);
   }
 }

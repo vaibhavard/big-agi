@@ -2,25 +2,23 @@ import { ActileItem, ActileProvider } from './ActileProvider';
 import { findAllChatCommands } from '../../../commands/commands.registry';
 
 
-export function providerCommands(onCommandSelect: (item: ActileItem) => void): ActileProvider {
-  return {
+export const providerCommands = (onItemSelect: (item: ActileItem) => void): ActileProvider => ({
+  id: 'actile-commands',
+  title: 'Chat Commands',
+  searchPrefix: '/',
 
-    // only the literal '/' is a trigger
-    fastCheckTriggerText: (trailingText: string) => trailingText === '/',
+  checkTriggerText: (trailingText: string) =>
+    trailingText.trim() === '/',
 
-    // no real need to be async
-    fetchItems: async () => ({
-      title: 'Chat Commands',
-      searchPrefix: '/',
-      items: findAllChatCommands().map((cmd) => ({
-        key: cmd.primary,
-        label: cmd.primary,
-        argument: cmd.arguments?.join(' ') ?? undefined,
-        description: cmd.description,
-        Icon: cmd.Icon,
-      } satisfies ActileItem)),
-    }),
+  fetchItems: async () => {
+    return findAllChatCommands().map((cmd) => ({
+      id: cmd.primary,
+      label: cmd.primary,
+      argument: cmd.arguments?.join(' ') ?? undefined,
+      description: cmd.description,
+      Icon: cmd.Icon,
+    }));
+  },
 
-    onItemSelect: onCommandSelect,
-  };
-}
+  onItemSelect,
+});

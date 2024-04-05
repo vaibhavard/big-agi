@@ -10,11 +10,9 @@ import { isMacUser } from '~/common/util/pwaUtils';
 export function platformAwareKeystrokes(text: string) {
   return isMacUser
     ? text
-      .replaceAll('Ctrl', '⌘' /* Command */)
-      .replaceAll('Alt', '⌥' /* Option */)
+      .replaceAll('Ctrl', '⌘')
+      .replaceAll('Alt', '⌥')
       .replaceAll('Shift', '⇧')
-    // Optional: Replace "Enter" with "Return" if you want to align with Mac keyboard labeling
-    // .replaceAll('Enter', 'Return')
     : text;
 }
 

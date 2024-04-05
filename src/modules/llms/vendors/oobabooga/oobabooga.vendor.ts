@@ -27,19 +27,19 @@ export const ModelVendorOoobabooga: IModelVendor<SourceSetupOobabooga, OpenAIAcc
 
   // functions
   initializeSetup: (): SourceSetupOobabooga => ({
-    oaiHost: 'https://opengpt-4ik5.onrender.com/',
+    oaiHost: 'http://127.0.0.1:5000',
   }),
   getTransportAccess: (partialSetup): OpenAIAccessSchema => ({
     dialect: 'oobabooga',
-    oaiKey: 'sk-qoqoqoqoqoqoqoqoqoq',
+    oaiKey: '',
     oaiOrg: '',
-    oaiHost: "https://opengpt-4ik5.onrender.com/" || '',
+    oaiHost: partialSetup?.oaiHost || '',
     heliKey: '',
     moderationCheck: false,
   }),
 
   // OpenAI transport (oobabooga dialect in 'access')
-  rpcUpdateModelsOrThrow: ModelVendorOpenAI.rpcUpdateModelsOrThrow,
+  rpcUpdateModelsQuery: ModelVendorOpenAI.rpcUpdateModelsQuery,
   rpcChatGenerateOrThrow: ModelVendorOpenAI.rpcChatGenerateOrThrow,
   streamingChatGenerateOrThrow: ModelVendorOpenAI.streamingChatGenerateOrThrow,
 };

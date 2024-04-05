@@ -6,7 +6,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 import { AppPlaceholder } from '../../src/apps/AppPlaceholder';
 
-import { getBackendCapabilities } from '~/modules/backend/store-backend-capabilities';
+import { backendCaps } from '~/modules/backend/state-backend';
 import { getPlantUmlServerUrl } from '~/modules/blocks/code/RenderCode';
 
 import { withLayout } from '~/common/layout/withLayout';
@@ -76,7 +76,7 @@ function AppDebug() {
   const [saved, setSaved] = React.useState(false);
 
   // external state
-  const backendCaps = getBackendCapabilities();
+  const backendCapabilities = backendCaps();
   const chatsCount = useChatStore.getState().conversations?.length;
   const uxLabsExperiments = Object.entries(useUXLabsStore.getState()).filter(([_k, v]) => v === true).map(([k, _]) => k).join(', ');
   const { folders, enableFolders } = useFolderStore.getState();
@@ -112,7 +112,7 @@ function AppDebug() {
     },
   };
   const cBackend = {
-    configuration: backendCaps,
+    configuration: backendCapabilities,
     deployment: {
       home: Brand.URIs.Home,
       hostName: clientHostName(),

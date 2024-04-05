@@ -65,14 +65,13 @@ async function fetchPlantUmlSvg(plantUmlCode: string): Promise<string | null> {
 
 
 export const overlayButtonsSx: SxProps = {
-  position: 'absolute', top: 0, right: 0, zIndex: 2, /* top of message and its chips */
+  position: 'absolute', top: 0, right: 0, zIndex: 10,
   display: 'flex', flexDirection: 'row', gap: 1,
-  opacity: 0, transition: 'opacity 0.2s cubic-bezier(.17,.84,.44,1)',
-  // buttongroup: background
-  '& > div > button': {
-    backgroundColor: 'background.surface',
-    // backdropFilter: 'blur(12px)',
-  },
+  opacity: 0, transition: 'opacity 0.15s',
+  // '& > button': {
+  // backgroundColor: 'background.level2',
+  // backdropFilter: 'blur(12px)',
+  // },
 };
 
 
@@ -81,7 +80,6 @@ interface RenderCodeBaseProps {
   fitScreen?: boolean,
   noCopyButton?: boolean,
   optimizeLightweight?: boolean,
-  initialShowHTML?: boolean,
   sx?: SxProps,
 }
 
@@ -94,7 +92,7 @@ function RenderCodeImpl(props: RenderCodeImplProps) {
 
   // state
   const [fitScreen, setFitScreen] = React.useState(!!props.fitScreen);
-  const [showHTML, setShowHTML] = React.useState(props.initialShowHTML === true);
+  const [showHTML, setShowHTML] = React.useState(false);
   const [showMermaid, setShowMermaid] = React.useState(true);
   const [showPlantUML, setShowPlantUML] = React.useState(true);
   const [showSVG, setShowSVG] = React.useState(true);
@@ -138,7 +136,7 @@ function RenderCodeImpl(props: RenderCodeImplProps) {
   });
   renderPlantUML = renderPlantUML && (!!plantUmlHtmlData || !!plantUmlError);
 
-  const isSVG = (blockCode.startsWith('<svg') || blockCode.startsWith('<?xml version="1.0" encoding="UTF-8"?>\n<svg')) && blockCode.endsWith('</svg>');
+  const isSVG = blockCode.startsWith('<svg') && blockCode.endsWith('</svg>');
   const renderSVG = isSVG && showSVG;
   const canScaleSVG = renderSVG && blockCode.includes('viewBox="');
 

@@ -13,11 +13,11 @@ import '~/common/styles/GithubMarkdown.css';
 import '~/common/styles/NProgress.css';
 import '~/common/styles/app.styles.css';
 
-import { ProviderBackendCapabilities } from '~/common/providers/ProviderBackendCapabilities';
+import { ProviderBackendAndNoSSR } from '~/common/providers/ProviderBackendAndNoSSR';
 import { ProviderBootstrapLogic } from '~/common/providers/ProviderBootstrapLogic';
 import { ProviderSingleTab } from '~/common/providers/ProviderSingleTab';
 import { ProviderSnacks } from '~/common/providers/ProviderSnacks';
-import { ProviderTRPCQuerySettings } from '~/common/providers/ProviderTRPCQuerySettings';
+import { ProviderTRPCQueryClient } from '~/common/providers/ProviderTRPCQueryClient';
 import { ProviderTheming } from '~/common/providers/ProviderTheming';
 import { hasGoogleAnalytics, OptionalGoogleAnalytics } from '~/common/components/GoogleAnalytics';
 import { isVercelFromFrontend } from '~/common/util/pwaUtils';
@@ -33,16 +33,15 @@ const MyApp = ({ Component, emotionCache, pageProps }: MyAppProps) =>
 
     <ProviderTheming emotionCache={emotionCache}>
       <ProviderSingleTab>
-        <ProviderTRPCQuerySettings>
-          <ProviderBackendCapabilities>
-            {/* ^ SSR boundary */}
-            <ProviderBootstrapLogic>
-              <ProviderSnacks>
+        <ProviderBootstrapLogic>
+          <ProviderTRPCQueryClient>
+            <ProviderSnacks>
+              <ProviderBackendAndNoSSR>
                 <Component {...pageProps} />
-              </ProviderSnacks>
-            </ProviderBootstrapLogic>
-          </ProviderBackendCapabilities>
-        </ProviderTRPCQuerySettings>
+              </ProviderBackendAndNoSSR>
+            </ProviderSnacks>
+          </ProviderTRPCQueryClient>
+        </ProviderBootstrapLogic>
       </ProviderSingleTab>
     </ProviderTheming>
 

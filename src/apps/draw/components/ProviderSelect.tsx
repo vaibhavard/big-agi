@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { FormControl, FormLabel, ListItemDecorator, Option, Select } from '@mui/joy';
-import FormatPaintTwoToneIcon from '@mui/icons-material/FormatPaintTwoTone';
+import FormatPaintIcon from '@mui/icons-material/FormatPaint';
 
 import type { TextToImageProvider } from '~/common/components/useCapabilities';
 import { OpenAIIcon } from '~/common/components/icons/vendors/OpenAIIcon';
@@ -22,7 +22,7 @@ export function ProviderSelect(props: {
         label: provider.label + (provider.painter !== provider.label ? ` ${provider.painter}` : ''),
         value: provider.id,
         configured: provider.configured,
-        Icon: provider.vendor === 'openai' ? OpenAIIcon : FormatPaintTwoToneIcon,
+        Icon: provider.vendor === 'openai' ? OpenAIIcon : FormatPaintIcon,
       });
     });
     return options;
@@ -41,7 +41,7 @@ export function ProviderSelect(props: {
         value={props.activeProviderId}
         placeholder='Select a service'
         onChange={(_event, value) => value && props.setActiveProviderId(value)}
-        // startDecorator={<FormatPaintTwoToneIcon sx={{ display: { xs: 'none', sm: 'inherit' } }} />}
+        // startDecorator={<FormatPaintIcon sx={{ display: { xs: 'none', sm: 'inherit' } }} />}
         sx={{
           minWidth: '12rem',
         }}

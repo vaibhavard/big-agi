@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Button, Typography } from '@mui/joy';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 
-import { getBackendCapabilities } from '~/modules/backend/store-backend-capabilities';
+import { backendCaps } from '~/modules/backend/state-backend';
 
 import { ExpanderAccordion } from '~/common/components/ExpanderAccordion';
 import { FormInputKey } from '~/common/components/forms/FormInputKey';
@@ -29,8 +29,8 @@ export function LocalAISourceSetup(props: { sourceId: DModelSourceId }) {
   const [adminOpen, setAdminOpen] = React.useState(false);
 
   // external state
-  const { hasLlmLocalAIHost: backendHasHost, hasLlmLocalAIKey: backendHasKey } = getBackendCapabilities();
-  const { source, sourceHasLLMs, access, updateSetup } =
+  const { hasLlmLocalAIHost: backendHasHost, hasLlmLocalAIKey: backendHasKey } = backendCaps();
+  const { source, access, updateSetup } =
     useSourceSetup(props.sourceId, ModelVendorLocalAI);
 
   // derived state
@@ -44,7 +44,7 @@ export function LocalAISourceSetup(props: { sourceId: DModelSourceId }) {
 
   // fetch models - the OpenAI way
   const { isFetching, refetch, isError, error } =
-    useLlmUpdateModels(ModelVendorLocalAI, access, !sourceHasLLMs && shallFetchSucceed, source);
+    useLlmUpdateModels(ModelVendorLocalAI, access, false /* !sourceHasLLMs && shallFetchSucceed */, source);
 
   return <>
 

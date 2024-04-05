@@ -20,18 +20,19 @@ const MISTRAL_REG_LINK = 'https://console.mistral.ai/';
 export function MistralSourceSetup(props: { sourceId: DModelSourceId }) {
 
   // external state
-  const { source, sourceHasLLMs, sourceSetupValid, access, hasNoBackendCap: needsUserKey, updateSetup } =
+  const { source, sourceSetupValid, access, updateSetup } =
     useSourceSetup(props.sourceId, ModelVendorMistral);
 
   // derived state
   const { oaiKey: mistralKey } = access;
 
+  const needsUserKey = !ModelVendorMistral.hasBackendCap?.();
   const shallFetchSucceed = !needsUserKey || (!!mistralKey && sourceSetupValid);
   const showKeyError = !!mistralKey && !sourceSetupValid;
 
   // fetch models
   const { isFetching, refetch, isError, error } =
-    useLlmUpdateModels(ModelVendorMistral, access, !sourceHasLLMs && shallFetchSucceed, source);
+    useLlmUpdateModels(ModelVendorMistral, access, shallFetchSucceed, source);
 
   return <>
 

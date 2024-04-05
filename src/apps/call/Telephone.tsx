@@ -7,10 +7,10 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import CallIcon from '@mui/icons-material/Call';
 import MicIcon from '@mui/icons-material/Mic';
 import MicNoneIcon from '@mui/icons-material/MicNone';
-import RecordVoiceOverTwoToneIcon from '@mui/icons-material/RecordVoiceOverTwoTone';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 
-import { ScrollToBottom } from '~/common/scroll-to-bottom/ScrollToBottom';
-import { ScrollToBottomButton } from '~/common/scroll-to-bottom/ScrollToBottomButton';
+import { ScrollToBottom } from '../chat/components/scroll-to-bottom/ScrollToBottom';
+import { ScrollToBottomButton } from '../chat/components/scroll-to-bottom/ScrollToBottomButton';
 import { useChatLLMDropdown } from '../chat/components/useLLMDropdown';
 
 import { EXPERIMENTAL_speakTextStream } from '~/modules/elevenlabs/elevenlabs.client';
@@ -57,7 +57,7 @@ function CallMenuItems(props: {
     </MenuItem>
 
     <MenuItem onClick={handleChangeVoiceToggle}>
-      <ListItemDecorator><RecordVoiceOverTwoToneIcon /></ListItemDecorator>
+      <ListItemDecorator><RecordVoiceOverIcon /></ListItemDecorator>
       Change Voice
       <Switch checked={props.override} onChange={handleChangeVoiceToggle} sx={{ ml: 'auto' }} />
     </MenuItem>
@@ -331,9 +331,22 @@ export function Telephone(props: {
         padding: 0, // move this to the ScrollToBottom component
       }}>
 
-        <ScrollToBottom stickToBottomInitial>
+        <ScrollToBottom
+          // bootToBottom
+          stickToBottom
+          sx={{
+            // allows the content to be scrolled (all browsers)
+            overflowY: 'auto',
+            // actually make sure this scrolls & fills
+            height: '100%',
 
-          <Box sx={{ minHeight: '100%', p: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+            // content
+            display: 'grid',
+            padding: 1,
+          }}
+        >
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
 
             {/* Call Messages [] */}
             {callMessages.map((message) =>

@@ -17,12 +17,13 @@ import { isValidAzureApiKey, ModelVendorAzure } from './azure.vendor';
 export function AzureSourceSetup(props: { sourceId: DModelSourceId }) {
 
   // external state
-  const { source, sourceHasLLMs, access, hasNoBackendCap: needsUserKey, updateSetup } =
+  const { source, sourceHasLLMs, access, updateSetup } =
     useSourceSetup(props.sourceId, ModelVendorAzure);
 
   // derived state
   const { oaiKey: azureKey, oaiHost: azureEndpoint } = access;
 
+  const needsUserKey = !ModelVendorAzure.hasBackendCap?.();
   const keyValid = isValidAzureApiKey(azureKey);
   const keyError = (/*needsUserKey ||*/ !!azureKey) && !keyValid;
   const hostValid = !!asValidURL(azureEndpoint);

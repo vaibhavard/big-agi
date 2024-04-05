@@ -1,3 +1,5 @@
+import { backendCaps } from '~/modules/backend/state-backend';
+
 import { OllamaIcon } from '~/common/components/icons/vendors/OllamaIcon';
 import { apiAsync, apiQuery } from '~/common/util/trpc.client';
 
@@ -20,10 +22,10 @@ export interface SourceSetupOllama {
 export const ModelVendorOllama: IModelVendor<SourceSetupOllama, OllamaAccessSchema, LLMOptionsOpenAI> = {
   id: 'ollama',
   name: 'Ollama',
-  rank: 22,
+  rank: 20,
   location: 'local',
   instanceLimit: 2,
-  hasBackendCapKey: 'hasLlmOllama',
+  hasBackendCap: () => backendCaps().hasLlmOllama,
 
   // components
   Icon: OllamaIcon,
@@ -37,7 +39,14 @@ export const ModelVendorOllama: IModelVendor<SourceSetupOllama, OllamaAccessSche
   }),
 
   // List Models
-  rpcUpdateModelsOrThrow: async (access) => await apiAsync.llmOllama.listModels.query({ access }),
+  rpcUpdateModelsQuery: (access, enabled, onSuccess) => {
+    return apiQuery.llmOllama.listModels.useQuery({ access }, {
+      enabled: enabled,
+      onSuccess: onSuccess,
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    });
+  },
 
   // Chat Generate (non-streaming) with Functions
   rpcChatGenerateOrThrow: async (access, llmOptions, messages, functions, forceFunctionName, maxTokens) => {

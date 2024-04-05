@@ -1,8 +1,9 @@
 import * as React from 'react';
 
-import { SvgIcon, SvgIconProps } from '@mui/joy';
+import { SvgIcon } from '@mui/joy';
+import { SxProps } from '@mui/joy/styles/types';
 
-export function AzureIcon(props: SvgIconProps) {
+export function AzureIcon(props: { sx?: SxProps }) {
   return <SvgIcon viewBox='0 0 24 24' width='24' height='24' stroke='currentColor' strokeWidth={1.5} fill='none' strokeLinecap='round' strokeLinejoin='round' {...props}>
     {/*<path stroke='none' d='M0 0h24v24H0z' fill='none'></path>*/}
     <path stroke='none' d='M0 0h24v24H0z' fill='none' />

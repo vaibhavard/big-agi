@@ -1,6 +1,6 @@
 import { Box, IconButton, styled } from '@mui/joy';
 
-import { animationColorBeamScatterINV } from '~/common/util/animUtils';
+import { cssRainbowColorKeyframes } from '~/common/app.theme';
 
 
 export const DesktopNavGroupBox = styled(Box)({
@@ -26,7 +26,6 @@ export const navItemClasses = {
   typeMenu: 'NavButton-typeMenu',
   typeApp: 'NavButton-typeApp',
   typeLinkOrModal: 'NavButton-typeLink',
-  dev: 'NavButton-dev',
   active: 'NavButton-active',
   paneOpen: 'NavButton-paneOpen',
   attractive: 'NavButton-attractive',
@@ -42,7 +41,6 @@ export const DesktopNavIcon = styled(IconButton)(({ theme }) => ({
   padding: 0,
 
   [`&.${navItemClasses.typeApp},&.${navItemClasses.typeLinkOrModal}`]: {
-    // NOTE: 1.5 would be 24px, the native icon size - maybe we should use that for the selected app?
     '--Icon-fontSize': '1.25rem',
   },
 
@@ -55,6 +53,10 @@ export const DesktopNavIcon = styled(IconButton)(({ theme }) => ({
     },
   },
 
+  // [`&.${navItemClasses.typeLinkOrModal}`]: {
+  //   borderRadius: '50%',
+  // },
+
   [`&.${navItemClasses.typeApp}`]: {
     '--IconButton-size': 'calc(var(--Bar) - 2 * var(--MarginX))',
     transition: 'border-radius 0.4s, margin 0.2s, padding 0.2s', // background-color 0.3s, color 0.2s
@@ -65,11 +67,6 @@ export const DesktopNavIcon = styled(IconButton)(({ theme }) => ({
     // backgroundColor: theme.palette.neutral.softHoverBg,
     color: theme.palette.neutral.softColor,
   },
-
-  // [`&.${navItemClasses.typeLinkOrModal}`]: {
-  //   borderRadius: '50%',
-  //   transition: 'font-size 5s, color 0.2s',
-  // },
 
   // app active (non hover)
   // [`&.${navItemClasses.typeApp}.${navItemClasses.active}`]: {},
@@ -92,13 +89,9 @@ export const DesktopNavIcon = styled(IconButton)(({ theme }) => ({
 
   // attractive: attract the user to click on this element
   [`&.${navItemClasses.attractive}`]: {
-    '--Icon-fontSize': '2rem',
-    animation: `${animationColorBeamScatterINV} 4s infinite`,
-  },
-
-  // debug: show a red outline
-  [`&.${navItemClasses.dev}`]: {
-    border: '2px dashed red',
+    animation: `${cssRainbowColorKeyframes} 5s infinite`,
+    animationDelay: '5s',
+    transform: 'scale(1.4)',
   },
 
 })) as typeof IconButton;

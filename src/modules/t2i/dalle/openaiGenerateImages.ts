@@ -30,16 +30,16 @@ export async function openAIGenerateImagesOrThrow(modelSourceId: DModelSourceId,
   while (_count > 0) {
 
     // per-request count
-    const perRequestCount = Math.min(_count, isD3 ? 1 : 10);
+    const count = Math.min(_count, isD3 ? 1 : 10);
 
     const imageRefPromise = apiAsync.llmOpenAI.createImages.mutate({
       access: findAccessForSourceOrThrow(modelSourceId),
-      config: {
+      request: {
         prompt: prompt,
-        count: perRequestCount,
+        count: count,
         model: dalleModelId,
         quality: dalleQuality,
-        responseFormat: 'url',
+        asUrl: true,
         size: dalleSize,
         style: dalleStyle,
       },
@@ -49,7 +49,7 @@ export async function openAIGenerateImagesOrThrow(modelSourceId: DModelSourceId,
     );
 
     imagePromises.push(imageRefPromise);
-    _count -= perRequestCount;
+    _count -= count;
   }
 
   // run all image generation requests

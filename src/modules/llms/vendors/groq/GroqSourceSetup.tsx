@@ -20,20 +20,21 @@ export function GroqSourceSetup(props: { sourceId: DModelSourceId }) {
 
   // external state
   const {
-    source, sourceHasLLMs, access,
-    sourceSetupValid, hasNoBackendCap: needsUserKey, updateSetup,
+    source, access,
+    sourceSetupValid, updateSetup,
   } = useSourceSetup(props.sourceId, ModelVendorGroq);
 
   // derived state
   const { oaiKey: groqKey } = access;
 
   // key validation
+  const needsUserKey = !ModelVendorGroq.hasBackendCap?.();
   const shallFetchSucceed = !needsUserKey || (!!groqKey && sourceSetupValid);
   const showKeyError = !!groqKey && !sourceSetupValid;
 
   // fetch models
   const { isFetching, refetch, isError, error } =
-    useLlmUpdateModels(ModelVendorGroq, access, !sourceHasLLMs && shallFetchSucceed, source);
+    useLlmUpdateModels(ModelVendorGroq, access, shallFetchSucceed, source);
 
 
   return <>

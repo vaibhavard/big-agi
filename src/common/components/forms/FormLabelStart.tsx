@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { FormHelperText, FormLabel } from '@mui/joy';
+import { Box, FormHelperText, FormLabel } from '@mui/joy';
 import { SxProps } from '@mui/joy/styles/types';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -17,35 +17,37 @@ const FormLabelStartBase = (props: {
   tooltip?: string | React.JSX.Element,
   onClick?: (event: React.MouseEvent) => void,
   sx?: SxProps,
-}) =>
-  <div>
-    {/* Title */}
-    <FormLabel
-      onClick={props.onClick}
-      sx={{
-        minWidth: formLabelStartWidth,
-        ...(!!props.onClick && { cursor: 'pointer', textDecoration: 'underline' }),
-        ...props.sx,
-      }}
-    >
-      {props.title} {props.tooltip && (
-      <GoodTooltip title={props.tooltip}>
-        <InfoIcon sx={{ ml: 0.5, cursor: 'pointer', fontSize: 'md', color: 'primary.solidBg' }} />
-      </GoodTooltip>
-    )}
-    </FormLabel>
-
-    {/* [SubTitle] */}
-    {!!props.description && (
-      <FormHelperText
+}) => React.useMemo(() =>
+    <Box>
+      {/* Title */}
+      <FormLabel
+        onClick={props.onClick}
         sx={{
-          display: 'block',
+          minWidth: formLabelStartWidth,
+          ...(!!props.onClick && { cursor: 'pointer', textDecoration: 'underline' }),
+          ...props.sx,
         }}
       >
-        {props.description}
-      </FormHelperText>
-    )}
-  </div>;
+        {props.title} {props.tooltip && (
+        <GoodTooltip title={props.tooltip}>
+          <InfoIcon sx={{ mx: 0.5, cursor: 'pointer', fontSize: 'md', color: 'primary.solidBg' }} />
+        </GoodTooltip>
+      )}
+      </FormLabel>
+
+      {/* [SubTitle] */}
+      {!!props.description && (
+        <FormHelperText
+          sx={{
+            display: 'block',
+          }}
+        >
+          {props.description}
+        </FormHelperText>
+      )}
+    </Box>
+  , [props.onClick, props.sx, props.title, props.tooltip, props.description],
+);
 FormLabelStartBase.displayName = 'FormLabelStart';
 
 export const FormLabelStart = React.memo(FormLabelStartBase);

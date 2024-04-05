@@ -1,15 +1,22 @@
 import type { FunctionComponent } from 'react';
 
 export interface ActileItem {
-  key: string;
+  id: string;
   label: string;
   argument?: string;
   description?: string;
   Icon?: FunctionComponent;
 }
 
-export interface ActileProvider<TItem extends ActileItem = ActileItem> {
-  fastCheckTriggerText: (trailingText: string) => boolean;
-  fetchItems: () => Promise<{ title: string, searchPrefix: string, items: TItem[] }>;
+type ActileProviderIds = 'actile-commands' | 'actile-attach-reference';
+
+export interface ActileProvider {
+  id: ActileProviderIds;
+  title: string;
+  searchPrefix: string;
+
+  checkTriggerText: (trailingText: string) => boolean;
+
+  fetchItems: () => Promise<ActileItem[]>;
   onItemSelect: (item: ActileItem) => void;
 }

@@ -8,23 +8,23 @@
  */
 export const Brand = {
   Title: {
-    Base: 'big-AGI',
-    Common: (process.env.NODE_ENV === 'development' ? '[DEV] ' : '') + 'big-AGI',
+    Base: 'CoolAGI',
+    Common: (process.env.NODE_ENV === 'development' ? '[DEV] ' : '') + 'CoolAGI',
   },
   Meta: {
-    Description: 'Launch big-AGI to unlock the full potential of AI, with precise control over your data and models. Voice interface, AI personas, advanced features, and fun UX.',
-    SiteName: 'big-AGI | Precision AI for You',
+    Description: 'An Opensource alternative to OpenAI GPT-4 Plus packed with a powerful code-interpreter and Free access to gpt-4 & gpt-4-vision',
+    SiteName: 'CoolAGI | Limits? Tier? What is that? We provide unlimited and free access to llms.',
     ThemeColor: '#32383E',
     TwitterSite: '@enricoros',
   },
   URIs: {
-    Home: 'https://big-agi.com',
+    Home: 'https://github.com/nextgen-user/CoolAGI',
     // App: 'https://get.big-agi.com',
-    CardImage: 'https://big-agi.com/icons/card-dark-1200.png',
-    OpenRepo: 'https://github.com/enricoros/big-agi',
+    CardImage: 'https://github.com/nextgen-user/freegpt4plus/assets/150797204/9b0e1232-4791-4d61-b949-16f9eb284c22',
+    OpenRepo: 'https://github.com/nextgen-user/CoolAGI',
     OpenProject: 'https://github.com/users/enricoros/projects/4',
-    SupportInvite: 'https://discord.gg/MkH4qj2Jp9',
+    SupportInvite: 'https://discord.com/invite/vNft3Un2',
     // Twitter: 'https://www.twitter.com/enricoros',
     PrivacyPolicy: 'https://big-agi.com/privacy',
   },
-} as const;
+};

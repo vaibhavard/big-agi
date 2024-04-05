@@ -1,21 +1,59 @@
 import * as React from 'react';
 
 import { Box, Button, Card, CardContent, IconButton, ListItemDecorator, Typography } from '@mui/joy';
-import ArrowForwardRoundedIcon from '@mui/icons-material/ArrowForwardRounded';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ChatIcon from '@mui/icons-material/Chat';
-import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import CheckIcon from '@mui/icons-material/Check';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import MicIcon from '@mui/icons-material/Mic';
-import RecordVoiceOverTwoToneIcon from '@mui/icons-material/RecordVoiceOverTwoTone';
+import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver';
 import WarningRoundedIcon from '@mui/icons-material/WarningRounded';
 
 import { PreferencesTab, useOptimaLayout } from '~/common/layout/optima/useOptimaLayout';
-import { animationColorRainbow } from '~/common/util/animUtils';
+import { cssRainbowColorKeyframes } from '~/common/app.theme';
 import { navigateBack } from '~/common/app.routes';
 import { useCapabilityBrowserSpeechRecognition, useCapabilityElevenLabs } from '~/common/components/useCapabilities';
 import { useChatStore } from '~/common/state/store-chats';
 import { useUICounter } from '~/common/state/store-ui';
 
+
+/*export const cssRainbowBackgroundKeyframes = keyframes`
+    100%, 0% {
+        background-color: rgb(128, 0, 0);
+    }
+    8% {
+        background-color: rgb(102, 51, 0);
+    }
+    16% {
+        background-color: rgb(64, 64, 0);
+    }
+    25% {
+        background-color: rgb(38, 76, 0);
+    }
+    33% {
+        background-color: rgb(0, 89, 0);
+    }
+    41% {
+        background-color: rgb(0, 76, 41);
+    }
+    50% {
+        background-color: rgb(0, 64, 64);
+    }
+    58% {
+        background-color: rgb(0, 51, 102);
+    }
+    66% {
+        background-color: rgb(0, 0, 128);
+    }
+    75% {
+        background-color: rgb(63, 0, 128);
+    }
+    83% {
+        background-color: rgb(76, 0, 76);
+    }
+    91% {
+        background-color: rgb(102, 0, 51);
+    }`;*/
 
 function StatusCard(props: { icon: React.JSX.Element, hasIssue: boolean, text: string, button?: React.JSX.Element }) {
   return (
@@ -29,7 +67,7 @@ function StatusCard(props: { icon: React.JSX.Element, hasIssue: boolean, text: s
           {props.button}
         </Typography>
         <ListItemDecorator>
-          {props.hasIssue ? <WarningRoundedIcon color='warning' /> : <CheckRoundedIcon color='success' />}
+          {props.hasIssue ? <WarningRoundedIcon color='warning' /> : <CheckIcon color='success' />}
         </ListItemDecorator>
       </CardContent>
     </Card>
@@ -86,7 +124,7 @@ export function CallWizard(props: { strict?: boolean, conversationId: string | n
 
     <Typography level='title-lg' sx={{ fontSize: '3rem', fontWeight: 'sm', textAlign: 'center' }}>
       Welcome to<br />
-      <Box component='span' sx={{ animation: `${animationColorRainbow} 15s linear infinite` }}>
+      <Box component='span' sx={{ animation: `${cssRainbowColorKeyframes} 15s linear infinite` }}>
         your first call
       </Box>
     </Typography>
@@ -129,7 +167,7 @@ export function CallWizard(props: { strict?: boolean, conversationId: string | n
 
     {/* Text to Speech status */}
     <StatusCard
-      icon={<RecordVoiceOverTwoToneIcon />}
+      icon={<RecordVoiceOverIcon />}
       text={
         (synthesis.mayWork ? 'Voice synthesis should be ready.' : 'There might be an issue with ElevenLabs voice synthesis.')
         + (synthesis.isConfiguredServerSide ? '' : (synthesis.isConfiguredClientSide ? '' : ' Please add your API key in the settings.'))
@@ -170,7 +208,7 @@ export function CallWizard(props: { strict?: boolean, conversationId: string | n
           // boxShadow: allGood ? 'md' : 'none',
         }}
       >
-        {allGood ? <ArrowForwardRoundedIcon sx={{ fontSize: '1.5em' }} /> : <CloseRoundedIcon sx={{ fontSize: '1.5em' }} />}
+        {allGood ? <ArrowForwardIcon sx={{ fontSize: '1.5em' }} /> : <CloseRoundedIcon sx={{ fontSize: '1.5em' }} />}
       </IconButton>
     </Box>
 

@@ -73,6 +73,7 @@ export const RenderTextDiff = (props: { diffBlock: DiffBlock; sx?: SxProps; }) =
         overflowWrap: 'anywhere',
         whiteSpace: 'break-spaces',
         display: 'block',
+        zIndex: 200,
         ...props.sx,
       }}
     >

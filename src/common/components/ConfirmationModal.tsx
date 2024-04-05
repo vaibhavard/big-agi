@@ -13,38 +13,26 @@ import { GoodModal } from '~/common/components/GoodModal';
 export function ConfirmationModal(props: {
   open?: boolean, onClose: () => void, onPositive: () => void,
   title?: string | React.JSX.Element,
-  noTitleBar?: boolean,
-  lowStakes?: boolean,
   confirmationText: string | React.JSX.Element,
-  positiveActionText: React.ReactNode,
-  negativeActionText?: React.ReactNode,
-  negativeActionStartDecorator?: React.ReactNode,
+  positiveActionText: string
 }) {
   return (
     <GoodModal
       open={props.open === undefined ? true : props.open}
-      title={props.noTitleBar ? undefined : (props.title || 'Confirmation')}
-      titleStartDecorator={props.noTitleBar ? undefined : <WarningRoundedIcon sx={{ color: 'danger.solidBg' }} />}
-      noTitleBar={props.noTitleBar}
+      title={props.title || 'Confirmation'}
+      titleStartDecorator={<WarningRoundedIcon sx={{ color: 'danger.solidBg' }} />}
       onClose={props.onClose}
       hideBottomClose
     >
-      {!props.noTitleBar && <Divider />}
-
+      <Divider />
       <Typography level='body-md'>
         {props.confirmationText}
       </Typography>
-
       <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 2 }}>
-        <Button autoFocus variant='plain' color='neutral' onClick={props.onClose} startDecorator={props.negativeActionStartDecorator}>
-          {props.negativeActionText || 'Cancel'}
+        <Button autoFocus variant='plain' color='neutral' onClick={props.onClose}>
+          Cancel
         </Button>
-        <Button
-          variant={props.lowStakes ? 'soft' : 'solid'}
-          color={props.lowStakes ? undefined : 'danger'}
-          onClick={props.onPositive}
-          sx={{ lineHeight: '1.5em' }}
-        >
+        <Button variant='solid' color='danger' onClick={props.onPositive} sx={{ lineHeight: '1.5em' }}>
           {props.positiveActionText}
         </Button>
       </Box>

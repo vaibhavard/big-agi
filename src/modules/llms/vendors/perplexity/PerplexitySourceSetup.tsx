@@ -20,20 +20,21 @@ export function PerplexitySourceSetup(props: { sourceId: DModelSourceId }) {
 
   // external state
   const {
-    source, sourceHasLLMs, access,
-    sourceSetupValid, hasNoBackendCap: needsUserKey, updateSetup,
+    source, access,
+    sourceSetupValid, updateSetup,
   } = useSourceSetup(props.sourceId, ModelVendorPerplexity);
 
   // derived state
   const { oaiKey: perplexityKey } = access;
 
   // key validation
+  const needsUserKey = !ModelVendorPerplexity.hasBackendCap?.();
   const shallFetchSucceed = !needsUserKey || (!!perplexityKey && sourceSetupValid);
   const showKeyError = !!perplexityKey && !sourceSetupValid;
 
   // fetch models
   const { isFetching, refetch, isError, error } =
-    useLlmUpdateModels(ModelVendorPerplexity, access, !sourceHasLLMs && shallFetchSucceed, source);
+    useLlmUpdateModels(ModelVendorPerplexity, access, shallFetchSucceed, source);
 
 
   return <>

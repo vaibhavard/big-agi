@@ -5,7 +5,7 @@ import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import EditRoundedIcon from '@mui/icons-material/EditRounded';
+import EditIcon from '@mui/icons-material/Edit';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderOutlinedIcon from '@mui/icons-material/FolderOutlined';
@@ -21,7 +21,6 @@ import { InlineTextarea } from '~/common/components/InlineTextarea';
 import { isDeepEqual } from '~/common/util/jsUtils';
 
 import { CHAT_NOVEL_TITLE } from '../AppChat';
-import { STREAM_TEXT_INDICATOR } from '../editors/chat-stream';
 
 
 // set to true to display the conversation IDs
@@ -54,7 +53,6 @@ export interface ChatNavigationItemData {
   isAlsoOpen: string | false;
   isEmpty: boolean;
   title: string;
-  userFlagsSummary: string | undefined;
   folder: DFolder | null | undefined; // null: 'All', undefined: do not show folder select
   updatedAt: number;
   messageCount: number;
@@ -88,7 +86,7 @@ function ChatDrawerItem(props: {
 
   // derived state
   const { onConversationBranch, onConversationExport, onConversationFolderChange } = props;
-  const { conversationId, isActive, isAlsoOpen, title, userFlagsSummary, folder, messageCount, assistantTyping, systemPurposeId, searchFrequency } = props.item;
+  const { conversationId, isActive, isAlsoOpen, title, folder, messageCount, assistantTyping, systemPurposeId, searchFrequency } = props.item;
   const isNew = messageCount === 0;
 
 
@@ -206,7 +204,7 @@ function ChatDrawerItem(props: {
         }}
       >
         {/*{DEBUG_CONVERSATION_IDS && `${conversationId} - `}*/}
-        {title.trim() ? title : CHAT_NOVEL_TITLE}{assistantTyping && STREAM_TEXT_INDICATOR}
+        {title.trim() ? title : CHAT_NOVEL_TITLE}{assistantTyping && '...'}
       </Box>
     ) : (
       <InlineTextarea
@@ -221,19 +219,16 @@ function ChatDrawerItem(props: {
       />
     )}
 
-    {/* Right text */}
-    {searchFrequency > 0 ? (
-      // Display search frequency if it exists and is greater than 0
-      <Typography level='body-sm'>
-        {searchFrequency}
-      </Typography>
-    ) : (userFlagsSummary && props.showSymbols) ? (
-      <Typography sx={{ mr: '5px' }}>
-        {userFlagsSummary}
-      </Typography>
-    ) : null}
+    {/* Display search frequency if it exists and is greater than 0 */}
+    {searchFrequency > 0 && (
+      <Box sx={{ ml: 1 }}>
+        <Typography level='body-sm'>
+          {searchFrequency}
+        </Typography>
+      </Box>
+    )}
 
-  </>, [assistantTyping, handleTitleEditBegin, handleTitleEditCancel, handleTitleEditChange, isActive, isEditingTitle, isNew, props.showSymbols, searchFrequency, textSymbol, title, userFlagsSummary]);
+  </>, [assistantTyping, handleTitleEditBegin, handleTitleEditCancel, handleTitleEditChange, isActive, isEditingTitle, isNew, props.showSymbols, searchFrequency, textSymbol, title]);
 
   const progressBarFixedComponent = React.useMemo(() =>
     progress > 0 && (
@@ -283,7 +278,7 @@ function ChatDrawerItem(props: {
         {/* buttons row */}
         {isActive && (
           <Box sx={{ display: 'flex', gap: 0.5, minHeight: '2.25rem', alignItems: 'center' }}>
-            {props.showSymbols && <ListItemDecorator />}
+            <ListItemDecorator />
 
             {/* Current Folder color, and change initiator */}
             {!deleteArmed && <>
@@ -305,7 +300,7 @@ function ChatDrawerItem(props: {
 
               <Tooltip disableInteractive title='Rename'>
                 <FadeInButton size='sm' disabled={isEditingTitle || isAutoEditingTitle} onClick={handleTitleEditBegin}>
-                  <EditRoundedIcon />
+                  <EditIcon />
                 </FadeInButton>
               </Tooltip>
 

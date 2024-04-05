@@ -1,17 +1,14 @@
 import { callBrowseFetchPage } from '~/modules/browse/browse.client';
 
-import type { ConversationHandler } from '~/common/chats/ConversationHandler';
+import { ConversationsManager } from '~/common/chats/ConversationsManager';
 
 
-export const runBrowseGetPageUpdatingState = async (cHandler: ConversationHandler, url?: string) => {
-  if (!url) {
-    cHandler.messageAppendAssistant('Issue: no URL provided.', undefined, 'issue', false);
-    return;
-  }
+export const runBrowseGetPageUpdatingState = async (conversationId: string, url: string) => {
+  const cHandler = ConversationsManager.getHandler(conversationId);
 
   // noinspection HttpUrlsUsage
   const shortUrl = url.replace('https://www.', '').replace('https://', '').replace('http://', '').replace('www.', '');
-  const assistantMessageId = cHandler.messageAppendAssistant(`Loading page at ${shortUrl}...`, undefined, 'web', true);
+  const assistantMessageId = cHandler.messageAppendAssistant(`Loading page at ${shortUrl}...`, 'web', undefined);
 
   try {
     const page = await callBrowseFetchPage(url);

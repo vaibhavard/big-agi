@@ -1,5 +1,8 @@
-import { GeminiIcon } from '~/common/components/icons/vendors/GeminiIcon';
- import { apiAsync } from '~/common/util/trpc.client';
+import GoogleIcon from '@mui/icons-material/Google';
+
+import { backendCaps } from '~/modules/backend/state-backend';
+
+import { apiAsync, apiQuery } from '~/common/util/trpc.client';
 
 import type { GeminiAccessSchema } from '../../server/gemini/gemini.router';
 import type { GeminiBlockSafetyLevel } from '../../server/gemini/gemini.wiretypes';
@@ -35,10 +38,10 @@ export const ModelVendorGemini: IModelVendor<SourceSetupGemini, GeminiAccessSche
   rank: 11,
   location: 'cloud',
   instanceLimit: 1,
-  hasBackendCapKey: 'hasLlmGemini',
+  hasBackendCap: () => backendCaps().hasLlmGemini,
 
   // components
-  Icon: GeminiIcon,
+  Icon: GoogleIcon,
   SourceSetupComponent: GeminiSourceSetup,
   LLMOptionsComponent: OpenAILLMOptions,
 
@@ -57,7 +60,14 @@ export const ModelVendorGemini: IModelVendor<SourceSetupGemini, GeminiAccessSche
   }),
 
   // List Models
-  rpcUpdateModelsOrThrow: async (access) => await apiAsync.llmGemini.listModels.query({ access }),
+  rpcUpdateModelsQuery: (access, enabled, onSuccess) => {
+    return apiQuery.llmGemini.listModels.useQuery({ access }, {
+      enabled: enabled,
+      onSuccess: onSuccess,
+      refetchOnWindowFocus: false,
+      staleTime: Infinity,
+    });
+  },
 
   // Chat Generate (non-streaming) with Functions
   rpcChatGenerateOrThrow: async (access, llmOptions, messages, functions, forceFunctionName, maxTokens) => {

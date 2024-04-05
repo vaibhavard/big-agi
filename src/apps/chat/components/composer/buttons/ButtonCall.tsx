@@ -21,7 +21,7 @@ const desktopSx: SxProps = {
 
 export const ButtonCallMemo = React.memo(ButtonCall);
 
-function ButtonCall(props: { isMobile?: boolean, disabled?: boolean, onClick: () => void }) {
+export function ButtonCall(props: { isMobile?: boolean, disabled?: boolean, onClick: () => void }) {
   return props.isMobile ? (
     <IconButton variant='soft' color='primary' disabled={props.disabled} onClick={props.onClick} sx={mobileSx}>
       <CallIcon />

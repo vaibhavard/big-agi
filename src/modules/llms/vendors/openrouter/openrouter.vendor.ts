@@ -1,3 +1,5 @@
+import { backendCaps } from '~/modules/backend/state-backend';
+
 import { OpenRouterIcon } from '~/common/components/icons/vendors/OpenRouterIcon';
 
 import type { IModelVendor } from '../IModelVendor';
@@ -36,7 +38,7 @@ export const ModelVendorOpenRouter: IModelVendor<SourceSetupOpenRouter, OpenAIAc
   location: 'cloud',
   instanceLimit: 1,
   hasFreeModels: true,
-  hasBackendCapKey: 'hasLlmOpenRouter',
+  hasBackendCap: () => backendCaps().hasLlmOpenRouter,
 
   // components
   Icon: OpenRouterIcon,
@@ -76,7 +78,7 @@ export const ModelVendorOpenRouter: IModelVendor<SourceSetupOpenRouter, OpenAIAc
   },
 
   // OpenAI transport ('openrouter' dialect in 'access')
-  rpcUpdateModelsOrThrow: ModelVendorOpenAI.rpcUpdateModelsOrThrow,
+  rpcUpdateModelsQuery: ModelVendorOpenAI.rpcUpdateModelsQuery,
   rpcChatGenerateOrThrow: ModelVendorOpenAI.rpcChatGenerateOrThrow,
   streamingChatGenerateOrThrow: ModelVendorOpenAI.streamingChatGenerateOrThrow,
 };
