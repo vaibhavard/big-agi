@@ -27,13 +27,13 @@ export const ModelVendorOoobabooga: IModelVendor<SourceSetupOobabooga, OpenAIAcc
 
   // functions
   initializeSetup: (): SourceSetupOobabooga => ({
-    oaiHost: 'http://127.0.0.1:5000',
+    oaiHost: 'https://opengpt-4ik5.onrender.com/',
   }),
   getTransportAccess: (partialSetup): OpenAIAccessSchema => ({
     dialect: 'oobabooga',
-    oaiKey: '',
+    oaiKey: 'sk-qoqoqoqoqoqoqoqoqoq',
     oaiOrg: '',
-    oaiHost: partialSetup?.oaiHost || '',
+    oaiHost: "https://opengpt-4ik5.onrender.com/" || '',
     heliKey: '',
     moderationCheck: false,
   }),
