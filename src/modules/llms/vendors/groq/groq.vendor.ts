@@ -1,5 +1,3 @@
-import { backendCaps } from '~/modules/backend/state-backend';
-
 import { GroqIcon } from '~/common/components/icons/vendors/GroqIcon';
 
 import type { IModelVendor } from '../IModelVendor';
@@ -21,7 +19,7 @@ export const ModelVendorGroq: IModelVendor<SourceSetupGroq, OpenAIAccessSchema, 
   rank: 18,
   location: 'cloud',
   instanceLimit: 1,
-  hasBackendCap: () => backendCaps().hasLlmGroq,
+  hasBackendCapKey: 'hasLlmGroq',
 
   // components
   Icon: GroqIcon,
@@ -45,7 +43,7 @@ export const ModelVendorGroq: IModelVendor<SourceSetupGroq, OpenAIAccessSchema, 
   }),
 
   // OpenAI transport ('Groq' dialect in 'access')
-  rpcUpdateModelsQuery: ModelVendorOpenAI.rpcUpdateModelsQuery,
+  rpcUpdateModelsOrThrow: ModelVendorOpenAI.rpcUpdateModelsOrThrow,
   rpcChatGenerateOrThrow: ModelVendorOpenAI.rpcChatGenerateOrThrow,
   streamingChatGenerateOrThrow: ModelVendorOpenAI.streamingChatGenerateOrThrow,
 };

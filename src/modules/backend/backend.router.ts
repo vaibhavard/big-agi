@@ -1,12 +1,33 @@
 import { z } from 'zod';
 
-import type { BackendCapabilities } from '~/modules/backend/state-backend';
+import type { BackendCapabilities } from '~/modules/backend/store-backend-capabilities';
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc.server';
 import { env } from '~/server/env.mjs';
 import { fetchJsonOrTRPCError } from '~/server/api/trpc.router.fetchers';
 
 import { analyticsListCapabilities } from './backend.analytics';
+
+
+function sdbmHash(str: string): string {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = char + (hash << 6) + (hash << 16) - hash;
+  }
+  // Convert to unsigned 32-bit integer and then to hex string
+  return (hash >>> 0).toString(16);
+}
+
+function generateLlmEnvConfigHash(env: Record<string, unknown>): string {
+  return sdbmHash(Object.keys(env)
+    .filter(key => !!env[key]) // remove empty
+    .filter(key => key.includes('_API_')) // only include API keys
+    .sort() // ignore order
+    .map(key => `${key}=${env[key]}`)
+    .join(';'),
+  );
+}
 
 
 /**
@@ -19,7 +40,7 @@ export const backendRouter = createTRPCRouter({
 
   /* List server-side capabilities (pre-configured by the deployer) */
   listCapabilities: publicProcedure
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx }): Promise<BackendCapabilities> => {
       analyticsListCapabilities(ctx.hostName);
       return {
         hasDB: (!!env.MDB_URI) || (!!env.POSTGRES_PRISMA_URL && !!env.POSTGRES_URL_NON_POOLING),
@@ -39,7 +60,8 @@ export const backendRouter = createTRPCRouter({
         hasLlmPerplexity: !!env.PERPLEXITY_API_KEY,
         hasLlmTogetherAI: !!env.TOGETHERAI_API_KEY,
         hasVoiceElevenLabs: !!env.ELEVENLABS_API_KEY,
-      } satisfies BackendCapabilities;
+        llmConfigHash: generateLlmEnvConfigHash(env),
+      };
     }),
 
 

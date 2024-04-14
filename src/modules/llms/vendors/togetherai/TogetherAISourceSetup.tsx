@@ -10,7 +10,7 @@ import { SetupFormRefetchButton } from '~/common/components/forms/SetupFormRefet
 import { useToggleableBoolean } from '~/common/util/useToggleableBoolean';
 
 import { DModelSourceId } from '../../store-llms';
-import { useLlmUpdateModels } from '../useLlmUpdateModels';
+import { useLlmUpdateModels } from '../../llm.client.hooks';
 import { useSourceSetup } from '../useSourceSetup';
 
 import { ModelVendorTogetherAI } from './togetherai.vendor';
@@ -26,27 +26,26 @@ export function TogetherAISourceSetup(props: { sourceId: DModelSourceId }) {
 
   // external state
   const {
-    source, access,
-    partialSetup, sourceSetupValid, updateSetup,
+    source, sourceHasLLMs, access,
+    partialSetup, sourceSetupValid, hasNoBackendCap: needsUserKey, updateSetup,
   } = useSourceSetup(props.sourceId, ModelVendorTogetherAI);
 
   // derived state
   const { oaiKey: togetherKey } = access;
 
   // validate if url is a well formed proper url with zod
-  const needsUserKey = !ModelVendorTogetherAI.hasBackendCap?.();
   const shallFetchSucceed = !needsUserKey || (!!togetherKey && sourceSetupValid);
   const showKeyError = !!togetherKey && !sourceSetupValid;
 
   // fetch models
   const { isFetching, refetch, isError, error } =
-    useLlmUpdateModels(ModelVendorTogetherAI, access, shallFetchSucceed, source);
+    useLlmUpdateModels(!sourceHasLLMs && shallFetchSucceed, source);
 
 
   return <>
 
     <FormInputKey
-      id='togetherai-key' label='Together AI Key'
+      autoCompleteId='togetherai-key' label='Together AI Key'
       rightLabel={<>{needsUserKey
         ? !togetherKey && <Link level='body-sm' href={TOGETHERAI_REG_LINK} target='_blank'>request Key</Link>
         : '✔️ already set in server'}

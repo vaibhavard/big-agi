@@ -6,7 +6,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 
 import { AppPlaceholder } from '../../src/apps/AppPlaceholder';
 
-import { backendCaps } from '~/modules/backend/state-backend';
+import { getBackendCapabilities } from '~/modules/backend/store-backend-capabilities';
 import { getPlantUmlServerUrl } from '~/modules/blocks/code/RenderCode';
 
 import { withLayout } from '~/common/layout/withLayout';
@@ -32,6 +32,7 @@ import { useUXLabsStore } from '~/common/state/store-ux-labs';
 // utils access
 import { clientHostName, isChromeDesktop, isFirefox, isIPhoneUser, isMacUser, isPwa, isVercelFromFrontend } from '~/common/util/pwaUtils';
 import { getGA4MeasurementId } from '~/common/components/GoogleAnalytics';
+import { prettyTimestampForFilenames } from '~/common/util/timeUtils';
 import { supportsClipboardRead } from '~/common/util/clipboardUtils';
 import { supportsScreenCapture } from '~/common/util/screenCaptureUtils';
 
@@ -76,7 +77,7 @@ function AppDebug() {
   const [saved, setSaved] = React.useState(false);
 
   // external state
-  const backendCapabilities = backendCaps();
+  const backendCaps = getBackendCapabilities();
   const chatsCount = useChatStore.getState().conversations?.length;
   const uxLabsExperiments = Object.entries(useUXLabsStore.getState()).filter(([_k, v]) => v === true).map(([k, _]) => k).join(', ');
   const { folders, enableFolders } = useFolderStore.getState();
@@ -112,7 +113,7 @@ function AppDebug() {
     },
   };
   const cBackend = {
-    configuration: backendCapabilities,
+    configuration: backendCaps,
     deployment: {
       home: Brand.URIs.Home,
       hostName: clientHostName(),
@@ -127,7 +128,7 @@ function AppDebug() {
   const handleDownload = async () => {
     fileSave(
       new Blob([JSON.stringify({ client: cClient, agi: cProduct, backend: cBackend }, null, 2)], { type: 'application/json' }),
-      { fileName: `big-agi-debug-${new Date().toISOString().replace(/:/g, '-')}.json`, extensions: ['.json'] },
+      { fileName: `big-agi_debug_${prettyTimestampForFilenames()}.json`, extensions: ['.json'] },
     )
       .then(() => setSaved(true))
       .catch(e => console.error('Error saving debug.json', e));

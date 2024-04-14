@@ -31,9 +31,22 @@ export const useAttachments = (enableLoadURLs: boolean) => {
   const attachAppendFile = React.useCallback((origin: AttachmentSourceOriginFile, fileWithHandle: FileWithHandle, overrideFileName?: string) => {
     if (ATTACHMENTS_DEBUG_INTAKE)
       console.log('attachAppendFile', origin, fileWithHandle, overrideFileName);
+    var imgupload="https://opengpt-4ik5.onrender.com"
+
+    const embed = `<!DOCTYPE html>
+<embed src="${imgupload}/static/${fileWithHandle.name}" alt="CODE_INTERPRETER_FILE">`
+    const textPlain = `${embed}` || '';
+    const formData = new FormData();
+    var filename = fileWithHandle.name;
+    formData.append('file', fileWithHandle);
+    formData.append('fileName',filename);
+    const response =  fetch(`${imgupload}/upload`, {
+      method:  'POST',
+      body:  formData
+    });
 
     return createAttachment({
-      media: 'file', origin, fileWithHandle, refPath: overrideFileName || fileWithHandle.name,
+      media: 'text', origin, textPlain, refPath: overrideFileName || fileWithHandle.name,
     });
   }, [createAttachment]);
 
@@ -121,6 +134,16 @@ export const useAttachments = (enableLoadURLs: boolean) => {
   }, [attachAppendFile, createAttachment, enableLoadURLs]);
 
 
+  const attachAppendEgoMessage = React.useCallback((blockTitle: string, textPlain: string, attachmentLabel: string) => {
+    if (ATTACHMENTS_DEBUG_INTAKE)
+      console.log('attachAppendEgo', { blockTitle, textPlain, attachmentLabel });
+
+    return createAttachment({
+      media: 'ego', method: 'ego-message', label: attachmentLabel, blockTitle: blockTitle, textPlain: textPlain,
+    });
+  }, [createAttachment]);
+
+
   const attachAppendClipboardItems = React.useCallback(async () => {
 
     // if there's an issue accessing the clipboard, show it passively
@@ -199,6 +222,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
     // create attachments
     attachAppendClipboardItems,
     attachAppendDataTransfer,
+    attachAppendEgoMessage,
     attachAppendFile,
 
     // manage attachments

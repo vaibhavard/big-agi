@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { NextRequest, NextResponse } from 'next/server';
 import { createParser as createEventsourceParser, EventSourceParseCallback, EventSourceParser, ParsedEvent, ReconnectInterval } from 'eventsource-parser';
 
-import { createEmptyReadableStream, debugGenerateCurlCommand, nonTrpcServerFetchOrThrow, safeErrorString, SERVER_DEBUG_WIRE, serverCapitalizeFirstLetter } from '~/server/wire';
+import { createEmptyReadableStream, debugGenerateCurlCommand, nonTrpcServerFetchOrThrow, safeErrorString, SERVER_DEBUG_WIRE, serverCapitalizeFirstLetter, ServerFetchError } from '~/server/wire';
 
 
 // Anthropic server imports
@@ -20,6 +20,12 @@ import { OLLAMA_PATH_CHAT, ollamaAccess, ollamaAccessSchema, ollamaChatCompletio
 // OpenAI server imports
 import type { OpenAIWire } from './openai/openai.wiretypes';
 import { openAIAccess, openAIAccessSchema, openAIChatCompletionPayload, openAIHistorySchema, openAIModelSchema } from './openai/openai.router';
+
+
+// configuration
+const USER_SYMBOL_MAX_TOKENS = '🧱';
+const USER_SYMBOL_PROMPT_BLOCKED = '🚫';
+// const USER_SYMBOL_NO_DATA_RECEIVED_BROKEN = '🔌';
 
 
 /**
@@ -103,7 +109,7 @@ export async function llmStreamingRelayHandler(req: NextRequest): Promise<Respon
       case 'perplexity':
       case 'togetherai':
         requestAccess = openAIAccess(access, model.id, '/v1/chat/completions');
-        body = openAIChatCompletionPayload(model, history, null, null, 1, true);
+        body = openAIChatCompletionPayload(access.dialect, model, history, null, null, 1, true);
         vendorStreamParser = createStreamParserOpenAI();
         break;
     }
@@ -115,14 +121,18 @@ export async function llmStreamingRelayHandler(req: NextRequest): Promise<Respon
     upstreamResponse = await nonTrpcServerFetchOrThrow(requestAccess.url, 'POST', requestAccess.headers, body);
 
   } catch (error: any) {
-    const fetchOrVendorError = safeErrorString(error) + (error?.cause ? ' · ' + error.cause : '');
 
     // server-side admins message
-    console.error(`/api/llms/stream: fetch issue:`, access.dialect, fetchOrVendorError, requestAccess?.url);
+    const capDialect = serverCapitalizeFirstLetter(access.dialect);
+    const fetchOrVendorError = safeErrorString(error) + (error?.cause ? ' · ' + JSON.stringify(error.cause) : '');
+    console.error(`[POST] /api/llms/stream: ${capDialect}: fetch issue:`, fetchOrVendorError, requestAccess?.url);
 
     // client-side users visible message
-    return new NextResponse(`[Issue] ${serverCapitalizeFirstLetter(access.dialect)}: ${fetchOrVendorError}`
-      + (process.env.NODE_ENV === 'development' ? ` · [URL: ${requestAccess?.url}]` : ''), { status: 500 });
+    const statusCode = ((error instanceof ServerFetchError) && (error.statusCode >= 400)) ? error.statusCode : 422;
+    const devMessage = process.env.NODE_ENV === 'development' ? ` [DEV_URL: ${requestAccess?.url}]` : '';
+    return new NextResponse(`**[Service Issue] ${capDialect}**: ${fetchOrVendorError}${devMessage}`, {
+      status: statusCode,
+    });
   }
 
   /* The following code is heavily inspired by the Vercel AI SDK, but simplified to our needs and in full control.
@@ -191,6 +201,7 @@ function createEventStreamTransformer(muxingFormat: MuxingFormat, vendorTextPars
   const textDecoder = new TextDecoder();
   const textEncoder = new TextEncoder();
   let eventSourceParser: EventSourceParser;
+  let hasReceivedData = false;
 
   return new TransformStream({
     start: async (controller): Promise<void> => {
@@ -225,7 +236,7 @@ function createEventStreamTransformer(muxingFormat: MuxingFormat, vendorTextPars
         } catch (error: any) {
           if (SERVER_DEBUG_WIRE)
             console.log(' - E: parse issue:', event.data, error?.message || error);
-          controller.enqueue(textEncoder.encode(` **[Stream Issue] ${dialectLabel}: ${safeErrorString(error) || 'Unknown stream parsing error'}**`));
+          controller.enqueue(textEncoder.encode(` **[Stream Issue] ${serverCapitalizeFirstLetter(dialectLabel)}**: ${safeErrorString(error) || 'Unknown stream parsing error'}`));
           controller.terminate();
         }
       };
@@ -238,7 +249,17 @@ function createEventStreamTransformer(muxingFormat: MuxingFormat, vendorTextPars
 
     // stream=true is set because the data is not guaranteed to be final and un-chunked
     transform: (chunk: Uint8Array) => {
+      hasReceivedData = true;
       eventSourceParser.feed(textDecoder.decode(chunk, { stream: true }));
+    },
+
+    flush: (controller): void => {
+      // if we get a flush() without having received any data, we should terminate the stream
+      // NOTE: happens with Gemini on 2024-03-14
+      if (!hasReceivedData) {
+        controller.enqueue(textEncoder.encode(` **[Service Issue] ${serverCapitalizeFirstLetter(dialectLabel)}**: No data was sent by the server.`));
+        controller.terminate();
+      }
     },
   });
 }
@@ -360,24 +381,26 @@ function createStreamParserGemini(modelName: string): AIStreamParser {
     // Prompt Safety Errors: pass through errors from Gemini
     if (generationChunk.promptFeedback?.blockReason) {
       const { blockReason, safetyRatings } = generationChunk.promptFeedback;
-      return { text: `[Gemini Prompt Blocked] ${blockReason}: ${JSON.stringify(safetyRatings || 'Unknown Safety Ratings', null, 2)}`, close: true };
+      return { text: `${USER_SYMBOL_PROMPT_BLOCKED} [Gemini Prompt Blocked] ${blockReason}: ${JSON.stringify(safetyRatings || 'Unknown Safety Ratings', null, 2)}`, close: true };
     }
 
     // expect a single completion
     const singleCandidate = generationChunk.candidates?.[0] ?? null;
     if (!singleCandidate)
-      throw new Error(`Gemini: expected 1 completion, got ${generationChunk.candidates?.length}`);
+      throw new Error(`expected 1 completion, got ${generationChunk.candidates?.length}`);
 
     // no contents: could be an expected or unexpected condition
     if (!singleCandidate.content) {
       if (singleCandidate.finishReason === 'MAX_TOKENS')
-        return { text: ' 🧱', close: true };
-      throw new Error('Gemini: server response missing content');
+        return { text: ` ${USER_SYMBOL_MAX_TOKENS}`, close: true };
+      if (singleCandidate.finishReason === 'RECITATION')
+        throw new Error('generation stopped due to RECITATION');
+      throw new Error(`server response missing content (finishReason: ${singleCandidate?.finishReason})`);
     }
 
     // expect a single part
     if (singleCandidate.content.parts?.length !== 1 || !('text' in singleCandidate.content.parts[0]))
-      throw new Error(`Gemini: expected 1 text part, got ${singleCandidate.content.parts?.length}`);
+      throw new Error(`expected 1 text part, got ${singleCandidate.content.parts?.length}`);
 
     // expect a single text in the part
     let text = singleCandidate.content.parts[0].text || '';

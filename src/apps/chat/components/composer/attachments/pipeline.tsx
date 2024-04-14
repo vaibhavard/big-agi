@@ -49,8 +49,8 @@ export function attachmentCreate(source: AttachmentSource, checkDuplicates: Atta
  * @param {(changes: Partial<Attachment>) => void} edit - A function to edit the Attachment object.
  */
 export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource>, edit: (changes: Partial<Attachment>) => void) {
-  var img=false
   edit({ inputLoading: true });
+  var img=false
 
   switch (source.media) {
 
@@ -137,7 +137,7 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
       break;
 
     case 'text':
-      if (source.textHtml && source.textPlain && !img) {
+      if (source.textHtml && source.textPlain) {
         edit({
           label: 'Rich Text',
           ref: '',
@@ -149,8 +149,7 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
             altData: source.textHtml,
           },
         });
-      }
-      else {
+      } else {
         const text = source.textHtml || source.textPlain || '';
         edit({
           label: 'Text',
@@ -162,7 +161,18 @@ export async function attachmentLoadInputAsync(source: Readonly<AttachmentSource
           },
         });
       }
+      break;
 
+    case 'ego':
+      edit({
+        label: source.label,
+        ref: source.blockTitle,
+        input: {
+          mimeType: 'ego/message',
+          data: source.textPlain,
+          dataSize: source.textPlain.length,
+        },
+      });
       break;
   }
 
@@ -222,6 +232,11 @@ export function attachmentDefineConverters(sourceType: AttachmentSource['media']
     case input.mimeType.startsWith('image/'):
       converters.push({ id: 'image', name: `Image (coming soon)` });
       converters.push({ id: 'image-ocr', name: 'As Text (OCR)' });
+      break;
+
+    // EGO
+    case input.mimeType === 'ego/message':
+      converters.push({ id: 'ego-message-md', name: 'Message' });
       break;
 
     // catch-all
@@ -337,7 +352,6 @@ export async function attachmentPerformConversion(attachment: Readonly<Attachmen
         base64Url: `data:notImplemented.yet:)`,
         collapsible: false,
       });*/
-
       break;
 
     case 'image-ocr':
@@ -364,6 +378,15 @@ export async function attachmentPerformConversion(attachment: Readonly<Attachmen
       } catch (error) {
         console.error(error);
       }
+      break;
+
+    case 'ego-message-md':
+      outputs.push({
+        type: 'text-block',
+        text: inputDataToString(input.data),
+        title: ref,
+        collapsible: true,
+      });
       break;
 
     case 'unhandled':
