@@ -21,7 +21,7 @@ export type AttachmentSource = {
   refPath: string;
 } | {
   media: 'text';
-  method: 'clipboard-read' | AttachmentSourceOriginDTO;
+  method?: 'clipboard-read' | AttachmentSourceOriginDTO;
   textPlain?: string;
   textHtml?: string;
 } | {

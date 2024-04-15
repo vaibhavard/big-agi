@@ -46,7 +46,7 @@ export const useAttachments = (enableLoadURLs: boolean) => {
     });
 
     return createAttachment({
-      media: 'text', origin, textPlain, refPath: overrideFileName || fileWithHandle.name,
+      media: 'text', textPlain:textPlain,
     });
   }, [createAttachment]);
 
